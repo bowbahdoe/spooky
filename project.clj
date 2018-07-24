@@ -31,7 +31,7 @@
                  [org.seleniumhq.selenium/htmlunit-driver "2.31.0"]
                  ;; https://mvnrepository.com/artifact/io.github.bonigarcia/webdrivermanager
                  [io.github.bonigarcia/webdrivermanager "2.2.4"]]
-  :ring {:handler com.baystateit.inventory.core/app}
+  :ring {:handler com.mrmccue.login.core/app}
   :plugins [[lein-ring "0.12.1"]]
 
   :java-source-paths ["src/"]
