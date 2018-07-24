@@ -5,11 +5,8 @@
             [compojure.route :as route]
             [compojure.handler :as handler]
             [ring.adapter.jetty :as jetty]
-            [ring.middleware.json :as json-middleware]
-            [clojure.java.io :as io])
-  (:gen-class :main true)
-  (:import [org.apache.commons.io.input CharSequenceReader]
-           [java.util Properties]))
+            [ring.middleware.json :as json-middleware])
+  (:gen-class :main true))
 
 (defroutes main-routes
            (GET "/session_info" [] (fn [req] (str (:session req))))
