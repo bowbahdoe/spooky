@@ -17,8 +17,6 @@
                  [org.clojure/core.incubator "0.1.4"]
                  [ring/ring-devel "1.6.3"]
                  [ring/ring-json "0.4.0"]
-                 ;; https://mvnrepository.com/artifact/cheshire/cheshire
-                 [cheshire/cheshire "5.8.0"]
                  ;; https://mvnrepository.com/artifact/org.clojure/java.jdbc
                  [org.clojure/java.jdbc "0.7.7"]
                  ;; https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
