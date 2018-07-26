@@ -12,7 +12,7 @@
     "Uses the session info to manually log out of the service.
     Similar to login, the shape of session-info is specific to
     the service and the service should raise an
-    IllegalArgumentException if it gets incorrect data."))
+    IllegalArgumentException if it gets incorrectly shaped data."))
 
 
 (defmacro required-str

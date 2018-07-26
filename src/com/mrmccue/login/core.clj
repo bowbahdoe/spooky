@@ -5,11 +5,18 @@
             [compojure.route :as route]
             [compojure.handler :as handler]
             [ring.adapter.jetty :as jetty]
-            [ring.middleware.json :as json-middleware])
+            [ring.middleware.json :as json-middleware]
+            [com.mrmccue.login.services.google :as google]
+            [com.mrmccue.login.services.core :refer [login]]
+            [com.mrmccue.login.config :refer [*config*]])
   (:gen-class :main true))
 
 (defroutes main-routes
            (GET "/session_info" [] (fn [req] (str (:session req))))
+           (GET "/google_credentials" []
+             (fn [req] {:body (login google/service {:email (get *config* "google.email")
+                                                     :password (get *config* "google.password")})}))
+
            (route/resources "/")
            (route/not-found "<h1> Not Found </h1"))
 

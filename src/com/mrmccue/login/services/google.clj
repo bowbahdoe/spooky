@@ -3,19 +3,18 @@
     :email "emccue@live.com"
     :doc "A service implementation for logging into google."}
   com.mrmccue.login.services.google
-  (:import [io.github.bonigarcia.wdm WebDriverManager]
-           [org.openqa.selenium.chrome ChromeDriver]
-           [org.openqa.selenium WebElement Keys By WebDriver$Options Cookie]
+  (:import [org.openqa.selenium.chrome ChromeDriver]
+           [org.openqa.selenium WebElement Keys By WebDriver$Options
+                                WebDriver$Navigation WebDriver$Navigation]
            [org.openqa.selenium.support.ui WebDriverWait ExpectedConditions])
-  (:require [com.mrmccue.login.services.core :refer [Service login required-str]]
-            [com.mrmccue.login.config :refer [*config*]]))
+  (:require [com.mrmccue.login.services.core :refer [Service login logout required-str]]
+            [com.mrmccue.login.services.selenium :refer [*make-selenium-driver*]]
+            [com.mrmccue.login.config :refer [*config*]]
+            [clojure.java.data :refer [from-java]]))
 
-;; Make sure chrome driver is installed
-(.setup (WebDriverManager/chromedriver))
-
-(def +login-button-xpath+ "//*[contains(text(), 'Sign in')]")
-(def +email-form-xpath+ "//input[@type='email']")
-(def +password-form-xpath+ "//input[@type='password']")
+(def ^{:private true} +login-button-xpath+ "//*[contains(text(), 'Sign in')]")
+(def ^{:private true} +email-form-xpath+ "//input[@type='email']")
+(def ^{:private true} +password-form-xpath+ "//input[@type='password']")
 
 (defn- find-form-by-xpath [driver xpath]
   (let [wait (WebDriverWait. driver 10)]
@@ -32,20 +31,37 @@
         password-form (find-form-by-xpath driver +password-form-xpath+)
         _ (.sendKeys password-form (into-array [password (str Keys/RETURN)]))
         cookies (-> driver (.manage) (.getCookies))]
-    (map bean cookies)))
+    cookies))
+
+(defn- logout-from-google
+  [driver {:keys [cookies]}]
+  (let [_ (.get driver "https://google.com")
+        _ (println cookies)
+        _ (println (-> driver (.manage) (.getCookies)))
+        _ (-> driver (.manage) (.deleteAllCookies))
+        _ (doseq [cookie cookies]
+            (-> driver (.manage) (.addCookie cookie)))
+        _ (-> driver (.navigate) (.refresh))
+        _ (println "AAAAAA")]))
+
 
 (def service
   (reify Service
-    (login [_ {:keys [email password]}]
+    (login [_ {:keys [email password] :as auth}]
       (required-str email)
       (required-str password)
-      (with-open [driver (ChromeDriver.)]
-        (login-to-google driver {:email email :password password})))
+      (with-open [driver (*make-selenium-driver*)]
+        (login-to-google driver auth)))
 
-    (logout [_ session-info]
-      (throw (UnsupportedOperationException. "Not Yet Implemented")))))
+    (logout [_ {:keys [cookies]}]
+      (let [driver (*make-selenium-driver*)]
+        (.get driver "https://google.com")
+        (doseq [cookie cookies]
+          (-> driver (.manage) (.addCookie cookie)))
+        (.get driver "https://google.com")))))
 
 (defn- -main []
   (let [cookies (login service {:email (get *config* "google.email")
                                 :password (get *config* "google.password")})]
-    (println cookies)))
+    (println (into [] cookies))
+    (logout service {:cookies cookies})))

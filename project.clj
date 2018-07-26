@@ -1,9 +1,6 @@
 (defproject spooky "0.1.0"
   :description "Generic Remote Login Service"
-  :dependencies [[com.intuit.quickbooks-online/ipp-v3-java-data "4.0.5"]
-                 [com.intuit.quickbooks-online/ipp-v3-java-devkit "4.0.5"]
-                 [com.intuit.quickbooks-online/oauth2-platform-api "4.0.5"]
-                 [org.clojure/clojure "1.9.0"]
+  :dependencies [[org.clojure/clojure "1.9.0"]
                  [ch.qos.logback/logback-classic "1.2.3"]
                  [org.clojure/core.async "0.4.474"]
                  [org.apache.commons/commons-lang3 "3.7"]
@@ -28,7 +25,10 @@
                  ;; https://mvnrepository.com/artifact/org.seleniumhq.selenium/htmlunit-driver
                  [org.seleniumhq.selenium/htmlunit-driver "2.31.0"]
                  ;; https://mvnrepository.com/artifact/io.github.bonigarcia/webdrivermanager
-                 [io.github.bonigarcia/webdrivermanager "2.2.4"]]
+                 [io.github.bonigarcia/webdrivermanager "2.2.4"]
+                 [org.clojure/java.data "0.1.1"]
+                 ;; https://mvnrepository.com/artifact/org.immutables/value
+                 [org.immutables/value "2.6.3"]]
   :ring {:handler com.mrmccue.login.core/app}
   :plugins [[lein-ring "0.12.1"]]
 
