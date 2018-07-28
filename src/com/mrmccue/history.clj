@@ -1,9 +1,7 @@
 (ns com.mrmccue.history
   (:require [clojure.algo.generic.functor :refer [fmap]]))
 
-;; This record only exists to allow us to implement
-;; protocols on History. It should not be used outside this ns.
-(defrecord -History
+(deftype -History
   [current forward back])
 
 (defn make-history
@@ -51,6 +49,6 @@
 (defmethod fmap -History
   [f history]
   (-> history
-      (assoc :back (fmap f (:back history)))
-      (assoc :forward (fmap f (:forward history)))
-      (assoc :current (f current))))
+      (assoc :back (map f (:back history)))
+      (assoc :forward (map f (:forward history)))
+      (assoc :current (f (:current history)))))
