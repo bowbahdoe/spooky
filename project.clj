@@ -28,7 +28,8 @@
                  [io.github.bonigarcia/webdrivermanager "2.2.4"]
                  [org.clojure/java.data "0.1.1"]
                  ;; https://mvnrepository.com/artifact/org.immutables/value
-                 [org.immutables/value "2.6.3"]]
+                 [org.immutables/value "2.6.3"]
+                 [com.github.shyiko.dotenv/dotenv "0.1.1"]]
   :ring {:handler com.mrmccue.login.core/app}
   :plugins [[lein-ring "0.12.1"]]
 

@@ -8,14 +8,14 @@
             [ring.middleware.json :as json-middleware]
             [com.mrmccue.login.services.google :as google]
             [com.mrmccue.login.services.core :refer [login]]
-            [com.mrmccue.login.config :refer [*config*]])
+            [com.mrmccue.login.config :refer [*config* config-val]])
   (:gen-class :main true))
 
 (defroutes main-routes
            (GET "/session_info" [] (fn [req] (str (:session req))))
            (GET "/google_credentials" []
-             (fn [req] {:body (login google/service {:email (get *config* "google.email")
-                                                     :password (get *config* "google.password")})}))
+             (fn [req] {:body (login google/service {:email (config-val *config* "google.email")
+                                                     :password (config-val *config* "google.password")})}))
 
            (route/resources "/")
            (route/not-found "<h1> Not Found </h1"))

@@ -4,58 +4,6 @@
   (:require [clojure.pprint :refer [pprint]]
             [clojure.test :refer [deftest testing is]]))
 
-(defrecord LiveServerState
-  [active-checkouts
-   available-credentials])
-;; A LiveServerState is a
-;; -- (LiveServerState. |List Checkout| CredentialRecord)
-
-;; ----------------------------------------------------------------------------
-(defrecord Checkout
-  [user
-   site
-   credential
-   last-renewed])
-;; A Checkout is a
-;; -- (Checkout. UserID SiteName Credential js/Date)
-
-;; ----------------------------------------------------------------------------
-(defrecord Site
-  [name
-   domain
-   credentials])
-;; A Site is a
-;; -- (Site. SiteName String |List Credential|)
-
-;; ----------------------------------------------------------------------------
-;; A Credential is a
-;; -- |Map Keyword String|
-
-;; ----------------------------------------------------------------------------
-;; A CredentialRecord is a
-;; --  |Map SiteName |List Credential||
-
-;; ----------------------------------------------------------------------------
-;; A SiteName is one of
-;; -- :NEJM
-;; -- :WSJ
-;; -- :RBC
-;; -- :STATP
-
-;; ----------------------------------------------------------------------------
-;; A UserID is a Unique string representing a user
-
-;; ----------------------------------------------------------------------------
-;; A Request is the Express Request object
-
-;; ----------------------------------------------------------------------------
-;; A Response is the Express Response object
-
-;; ----------------------------------------------------------------------------
-;; |X| an |Optional X| is one of
-;; -- X
-;; -- nil
-
 ;; ============================================================================
 ;; CONSTANTS
 ;; ============================================================================
@@ -78,19 +26,13 @@
   {:active-checkouts ()
    :available-credentials CREDENTIALS})
 
-(def +default-checkout-expiration+ (Duration/of 1 ChronoUnit/HOURS)) ;; 1 Hour
+(def +default-checkout-expiration+ (Duration/of 1 ChronoUnit/HOURS))
 
-(def CURRENT-STATE (atom +initial-state+))
 
 ;; ============================================================================
 ;; == LOGIC ==
 ;; ============================================================================
-(add-watch CURRENT-STATE :backup
-           (fn [_ _ old-state new-state]
-             (when (not= old-state new-state)
-               (println "Backing up the new state"))))
 
-;; ----------------------------------------------------------------------------
 (defn site-available?
   "Returns if there are credentials available for the given site."
   [live-state site-name]
@@ -113,19 +55,22 @@
   (get-in live-state [:available-credentials site-name] '()))
 
 ;; ----------------------------------------------------------------------------
-;; LiveServerState, UserID, SiteName -> '(|Optional CredentialRecord| LiveServerState)
 (defn user-make-checkout [live-state user site-name]
   (let [creds (get-available-credentials-for-site live-state site-name)]
     (if (empty? creds)
-      (list nil live-state)
+      {:credential nil
+       :new-state live-state}
       (let [popped-credential (first creds)]
-        (list popped-credential
-              (-> live-state
-                (update-in [:available-credentials site-name] #(rest %))
-                (update :active-checkouts #(conj % (Checkout. user
-                                                              site-name
-                                                              popped-credential
-                                                              (Instant/now))))))))))
+        {:credential popped-credential
+         :new-state (-> live-state
+                        (update-in [:available-credentials site-name] #(rest %))
+                        (update :active-checkouts
+                                (fn [checkouts]
+                                  (conj checkouts
+                                        {:user user
+                                         :site site-name
+                                         :credential popped-credential
+                                         :last-renewed (Instant/now)}))))}))))
 ;; ----------------------------------------------------------------------------
 ;; LiveServerState, UserID, SiteName -> Boolean
 (defn can-make-checkout? [live-state user site-name]
