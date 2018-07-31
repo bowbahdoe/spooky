@@ -58,7 +58,11 @@ Element ~{name} is not a symbol")))
 (declare return)
 (defmacro allow-early-return
   "lets you write the given block of code with unnamed early returns
-  in the form of a `return` function."
+  in the form of a `return` function.
+  Ex. (allow-early-return
+        (when (> x 10)
+          (return false))
+        (... some longer computation ...))"
   [& code]
   (let [block-name (gensym)
         ret-name (symbol (str "return-from-" block-name))]
@@ -67,7 +71,18 @@ Element ~{name} is not a symbol")))
               ~@code))))
 
 (declare const)
-(defmacro allow-toplevel-const [& code]
+(defmacro allow-toplevel-const
+  "Lets you write constant variables without nesting let
+  at the toplevel of the contained forms by using a 'const'
+  special form. The last form evaluated is returned
+  Ex. (allow-toplevel-const
+        (const x 10)
+        (const y 10)
+        (println (+ x y))
+        (const z (* x y))
+        (println z)
+        z)"
+  [& code]
   (let [starts-with-const (fn [form] (and (list? form)
                                           (not (empty? form))
                                           (= (first form) 'const)))
