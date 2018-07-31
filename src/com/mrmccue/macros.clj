@@ -56,7 +56,7 @@ Element ~{name} is not a symbol")))
             (hash-map ~@map-bindings))))
 
 (declare return)
-(defmacro imperative
+(defmacro allow-early-return
   "lets you write the given block of code with unnamed early returns
   in the form of a `return` function."
   [& code]
@@ -67,4 +67,32 @@ Element ~{name} is not a symbol")))
               ~@code))))
 
 (declare const)
+(defmacro allow-toplevel-const [& code]
+  (let [starts-with-const (fn [form] (and (list? form)
+                                          (not (empty? form))
+                                          (= (first form) 'const)))
+        valid-const-form (fn [form] (and (starts-with-const form)
+                                         (= (count form) 3)
+                                         (symbol? (second form))))]
+    (if (empty? code)
+      code
+      (let [form (first code)]
+        (if (starts-with-const form)
+          (if (valid-const-form form)
+            `(let [~(nth form 1) ~(nth form 2)]
+               (allow-toplevel-const ~@(rest code)))
+            (oops "Const form is invalid ~(first code)"))
+          (if (= (count (rest code)) 0)
+             `(do ~(first code))
+             `(do ~(first code)
+                  (allow-toplevel-const ~@(rest code)))))))))
+
+(defmacro imperative [& code]
+  `(allow-early-return
+     (allow-toplevel-const
+         ~@code)))
+
+(allow-toplevel-const
+  (const x 10)
+  (println x))
 (declare var)
