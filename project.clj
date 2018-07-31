@@ -29,7 +29,9 @@
                  [org.clojure/java.data "0.1.1"]
                  ;; https://mvnrepository.com/artifact/org.immutables/value
                  [org.immutables/value "2.6.3"]
-                 [com.github.shyiko.dotenv/dotenv "0.1.1"]]
+                 [com.github.shyiko.dotenv/dotenv "0.1.1"]
+                 ;; https://mvnrepository.com/artifact/clj-return-from/clj-return-from
+                 [clj-return-from/clj-return-from "1.0.1"]]
   :ring {:handler com.mrmccue.login.core/app}
   :plugins [[lein-ring "0.12.1"]]
 

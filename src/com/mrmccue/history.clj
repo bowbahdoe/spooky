@@ -1,7 +1,7 @@
 (ns com.mrmccue.history
   (:require [clojure.algo.generic.functor :refer [fmap]]))
 
-(deftype -History
+(defrecord -History
   [current forward back])
 
 (defn make-history
@@ -52,3 +52,10 @@
       (assoc :back (map f (:back history)))
       (assoc :forward (map f (:forward history)))
       (assoc :current (f (:current history)))))
+
+(defn length
+  "Gives the amount of items currently stored in the history"
+  [history]
+  (+ 1
+     (count (:forward history))
+     (count (:back history))))
