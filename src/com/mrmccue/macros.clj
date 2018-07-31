@@ -92,7 +92,4 @@ Element ~{name} is not a symbol")))
      (allow-toplevel-const
          ~@code)))
 
-(allow-toplevel-const
-  (const x 10)
-  (println x))
 (declare var)
