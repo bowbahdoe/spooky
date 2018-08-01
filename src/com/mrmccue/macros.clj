@@ -68,6 +68,11 @@ Element ~{name} is not a symbol")))
 (defmacro allow-early-return
   "lets you write the given block of code with unnamed early returns
   in the form of a `return` function.
+
+  Because the return mechanism uses Exceptions under the hood,
+  catching the generic Exception or Throwable class will lead to undefined
+  behaviour if done within a block that may call the return function.
+
   Ex. (allow-early-return
         (when (> x 10)
           (return false))
@@ -121,3 +126,47 @@ Element ~{name} is not a symbol")))
   `(allow-early-return
      (allow-toplevel-const
          ~@code)))
+
+;; ----------------------------------------------------------------------------
+(defmacro pull-keys
+  "Given an object and a vector of keywords which have the names of getter methods
+  on that object, will produce a map with the values from those getters as the
+  values and the name of the getter keyword-ized as the key.
+  Optionally, this can take a function to be applied to every value that is taken
+  from the object. This is useful for things like extracting values out of Options
+
+  This macro is useful for turning objects that don't follow the bean naming scheme
+  into persistent maps.
+  Ex.
+
+  (pull-keys [] [:getClass]) => {:getClass clojure.lang.PersistentVector}
+  (pull-keys [] [[:getClass [:getClass]]]) => {:getClass {:getClass java.lang.class}}
+  "
+  [obj getters & [id-fn]]
+  (letfn [(apply-to-each [expr]
+            (let [fun (if (nil? id-fn) `identity id-fn)]
+              (list fun expr)))
+          (take-property [obj k]
+            (apply-to-each (list (symbol (str "." (name k))) obj)))
+          (single-property [obj key]
+            (list `assoc key (take-property obj key)))
+          (renamed-property [obj [key-name getter-name]]
+            (list `assoc key-name (take-property obj getter-name)))
+          (recursive-properties [obj [key-name nested-props]]
+            (list `assoc key-name
+                  (make-assocs (take-property obj key-name) nested-props)))
+          (make-assocs [obj getters]
+            `(-> {}
+                 ~@(for [g getters]
+                     (cond (keyword? g)
+                           (single-property obj g)
+                           (and (sequential? g) (= (count g) 2))
+                           (if (sequential? (second g))
+                             (recursive-properties obj g)
+                             (renamed-property obj g))
+                           :else
+                           (throw
+                             (IllegalArgumentException.
+                               "Every element in the vector must be a keyword or a pair of a keyword
+                                and either another keyword or a nested vector of the same structure."))))))]
+    (make-assocs obj getters)))
