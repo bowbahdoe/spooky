@@ -7,6 +7,7 @@
     (oops "Argument to 'oops' must be a string literal"))
   `(throw (IllegalArgumentException. ^String (<< ~msg))))
 
+;; ----------------------------------------------------------------------------
 (defmacro m
   "Expands out a series of variables to a map where
   the name of the variable is the key under which the variable
@@ -24,10 +25,13 @@ Element ~{name} is not a symbol")))
         (for [name vars]
           [(keyword name) name])))
 
+
+;; ----------------------------------------------------------------------------
 (declare
   ^{:doc "Dummy variable to resolve the | symbol in cursive"}
   |)
 
+;; ----------------------------------------------------------------------------
 (defmacro m+
   "Like m, but will allow for custom rebinding of some symbols
   Ex. (m+ a b c) => {:a a, :b b, :c c}
@@ -55,7 +59,12 @@ Element ~{name} is not a symbol")))
     `(merge (m ~@symbols)
             (hash-map ~@map-bindings))))
 
-(declare return)
+;; ----------------------------------------------------------------------------
+(def return
+  #(throw (UnsupportedOperationException.
+            "return function used outside of supporting macro context")))
+
+;; ----------------------------------------------------------------------------
 (defmacro allow-early-return
   "lets you write the given block of code with unnamed early returns
   in the form of a `return` function.
@@ -70,7 +79,12 @@ Element ~{name} is not a symbol")))
             (let [~'return (fn [a#] (~ret-name a#))]
               ~@code))))
 
-(declare const)
+;; ----------------------------------------------------------------------------
+(def const
+  #(throw (UnsupportedOperationException.
+            "const function used outside of supporting macro context")))
+
+;; ----------------------------------------------------------------------------
 (defmacro allow-toplevel-const
   "Lets you write constant variables without nesting let
   at the toplevel of the contained forms by using a 'const'
@@ -96,15 +110,14 @@ Element ~{name} is not a symbol")))
           (if (valid-const-form form)
             `(let [~(nth form 1) ~(nth form 2)]
                (allow-toplevel-const ~@(rest code)))
-            (oops "Const form is invalid ~(first code)"))
+            (oops "Const form is invalid ~{form}"))
           (if (= (count (rest code)) 0)
-             `(do ~(first code))
+             (first code)
              `(do ~(first code)
                   (allow-toplevel-const ~@(rest code)))))))))
 
+;; ----------------------------------------------------------------------------
 (defmacro imperative [& code]
   `(allow-early-return
      (allow-toplevel-const
          ~@code)))
-
-(declare var)
