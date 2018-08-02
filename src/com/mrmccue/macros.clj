@@ -213,7 +213,7 @@ Element ~{name} is not a symbol")))
   Ex. (with-out-str
         (my.best/doseq-indexed i [x [10 100 1000]]
                                  (println \"i: \" i \"x: \" x)))
-       will output:
+  will output:
        i:  0 x:  10
        i:  1 x:  100
        i:  2 x:  1000"
