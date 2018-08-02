@@ -85,8 +85,8 @@ Element ~{name} is not a symbol")))
               ~@code))))
 
 ;; ----------------------------------------------------------------------------
-(def const
-  #(throw (UnsupportedOperationException.
+(defmacro const [& _]
+  `(throw (UnsupportedOperationException.
             "const function used outside of supporting macro context")))
 
 ;; ----------------------------------------------------------------------------
@@ -122,7 +122,10 @@ Element ~{name} is not a symbol")))
                   (allow-toplevel-const ~@(rest code)))))))))
 
 ;; ----------------------------------------------------------------------------
-(defmacro imperative [& code]
+(defmacro imperative
+  "Combines the early return and toplevel const macros to give something that
+  resembles an imperative style."
+  [& code]
   `(allow-early-return
      (allow-toplevel-const
          ~@code)))
@@ -141,13 +144,14 @@ Element ~{name} is not a symbol")))
 
   (pull-keys [] [:getClass]) => {:getClass clojure.lang.PersistentVector}
   (pull-keys [] [[:getClass [:getClass]]]) => {:getClass {:getClass java.lang.class}}
+  (pull-keys [] [[:class :getClass]]) => {:class clojure.lang.PersistentVector}
   "
   [obj getters & [id-fn]]
   (letfn [(apply-to-each [expr]
             (let [fun (if (nil? id-fn) `identity id-fn)]
               (list fun expr)))
           (take-property [obj k]
-            (apply-to-each (list (symbol (str "." (name k))) obj)))
+            (apply-to-each `(.  ~obj ~(symbol (name k)))))
           (single-property [obj key]
             (list `assoc key (take-property obj key)))
           (renamed-property [obj [key-name getter-name]]
@@ -170,3 +174,50 @@ Element ~{name} is not a symbol")))
                                "Every element in the vector must be a keyword or a pair of a keyword
                                 and either another keyword or a nested vector of the same structure."))))))]
     (make-assocs obj getters)))
+
+;; ----------------------------------------------------------------------------
+;; disp and doseq-indexed
+;; http://blog.klipse.tech/clojure/2016/05/09/macro-tutorial-4.html
+(defn symbol-several
+  "returns a symbol with the concatenation of the str values of the args"
+  [& x]
+  (symbol
+    (apply str x)))
+
+(defmacro disp
+  "The disp macro - by 2 anonymous ninjas
+  The disp macro receives expressions and returns a symbol
+  with the expressions and their respective evaluations.
+  (A symbol is much more pretty than a string.)
+
+  Ex.
+   (disp
+      (map inc [1 2 3])
+      (+ 4 5 6))
+
+  will output
+   (map inc [1 2 3]) => (2 3 4)
+   (+ 4 5 6) => 15"
+  [& forms]
+  (cons
+    `symbol-several
+    (for [form forms]
+      `(str '~form " => " ~form "\n"))))
+
+(defmacro doseq-indexed
+  "The doseq-indexed macro - by Tim Baldridge
+  doseq-indexed works like doseq with an additional binding to the index.
+  Tim Baldridge (core.async author) wrote an elegant implementation for
+  doseq-indexed
+
+  Ex. (with-out-str
+        (my.best/doseq-indexed i [x [10 100 1000]]
+                                 (println \"i: \" i \"x: \" x)))
+       will output:
+       i:  0 x:  10
+       i:  1 x:  100
+       i:  2 x:  1000"
+  [index-sym [item-sym coll] & body]
+  `(doseq [[~item-sym ~index-sym]
+           (map vector ~coll (range))]
+     ~@body))

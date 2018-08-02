@@ -1,8 +1,13 @@
 (ns com.mrmccue.history
-  (:require [clojure.algo.generic.functor :refer [fmap]]))
+  (:require [clojure.algo.generic.functor :refer [fmap]]
+            [clojure.core.strint :refer [<<]])
+  (:use [com.mrmccue.macros]))
 
 (defrecord -History
-  [current forward back])
+  [current forward back]
+  Object
+  (toString [this]
+    (<< "-History~(m current forward back)")))
 
 (defn make-history
   "Creates a new history store starting at the given 'origin'"

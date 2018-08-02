@@ -1,4 +1,6 @@
-(ns com.mrmccue.util)
+(ns com.mrmccue.util
+  (:import [java.security MessageDigest]
+           [java.nio.charset StandardCharsets]))
 
 ;; https://stackoverflow.com/questions/3249334/test-whether-a-list-contains-a-specific-value-in-clojure
 (defn in?
@@ -31,3 +33,11 @@
                 (for [[key-set val] m]
                   (for [key key-set]
                     [key val])))))
+
+
+(defn sha-512
+  [str]
+  (let [bytes (-> (MessageDigest/getInstance "SHA-512")
+                  (.digest (.getBytes str StandardCharsets/UTF_8)))
+        hex-str (format "%x" (BigInteger. bytes))]
+    hex-str))

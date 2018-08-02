@@ -49,6 +49,7 @@
                               (= site-name (:site checkout))))]
     (empty? (filter has-checkout-on-site checkouts))))
 
+
 ;; ----------------------------------------------------------------------------
 ;; LiveServerState, SiteName -> |List CredentialRecord|
 (defn get-available-credentials-for-site [live-state site-name]
