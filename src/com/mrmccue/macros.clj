@@ -61,8 +61,9 @@ Element ~{name} is not a symbol")))
 
 ;; ----------------------------------------------------------------------------
 (def return
-  #(throw (UnsupportedOperationException.
-            "return function used outside of supporting macro context")))
+  (fn [_]
+    (throw (UnsupportedOperationException.
+             "return function used outside of supporting macro context"))))
 
 ;; ----------------------------------------------------------------------------
 (defmacro allow-early-return
@@ -88,6 +89,7 @@ Element ~{name} is not a symbol")))
 (defmacro const [& _]
   `(throw (UnsupportedOperationException.
             "const function used outside of supporting macro context")))
+
 
 ;; ----------------------------------------------------------------------------
 (defmacro allow-toplevel-const
