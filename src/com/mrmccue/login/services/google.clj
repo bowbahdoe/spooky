@@ -18,6 +18,7 @@
 (def ^{:private true} +login-button-xpath+ "//*[contains(text(), 'Sign in')]")
 (def ^{:private true} +email-form-xpath+ "//input[@type='email']")
 (def ^{:private true} +password-form-xpath+ "//input[@type='password']")
+(def ^{:private true} +create-account-xpath+ "//*[contains(text(), 'Create account')]")
 
 (defn- login-to-google
   "Uses selenium to get the cookies associated with a google session."

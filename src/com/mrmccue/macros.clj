@@ -1,6 +1,7 @@
 (ns com.mrmccue.macros
   (:require [clojure.core.strint :refer [<<]]
-            [clj-return-from.core :refer [block]]))
+            [clj-return-from.core :refer [block]]
+            [clojure.java.io :as io]))
 
 (defmacro oops [msg]
   (when (not (string? msg))
@@ -56,8 +57,10 @@ Element ~{name} is not a symbol")))
     (when (not (even? (count map-bindings)))
       (oops "Uneven number of map bindings passed to the 'm+' macro"))
 
-    `(merge (m ~@symbols)
-            (hash-map ~@map-bindings))))
+    (merge (into {}
+                 (for [name symbols]
+                   [(keyword name) name]))
+           (apply hash-map map-bindings))))
 
 ;; ----------------------------------------------------------------------------
 (def return
@@ -89,7 +92,6 @@ Element ~{name} is not a symbol")))
 (defmacro const [& _]
   `(throw (UnsupportedOperationException.
             "const function used outside of supporting macro context")))
-
 
 ;; ----------------------------------------------------------------------------
 (defmacro allow-toplevel-const
@@ -223,3 +225,10 @@ Element ~{name} is not a symbol")))
   `(doseq [[~item-sym ~index-sym]
            (map vector ~coll (range))]
      ~@body))
+
+;; ----------------------------------------------------------------------------
+(defmacro load-file-compile-time
+  "Loads the contents of the file as a string at compile time"
+  [filename]
+  (-> (io/resource filename)
+      (slurp)))
