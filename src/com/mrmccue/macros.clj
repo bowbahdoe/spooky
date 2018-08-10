@@ -1,4 +1,7 @@
 (ns com.mrmccue.macros
+  ^{:author "Ethan McCue"
+    :email "emccue@live.com"
+    :doc "A collection of useful macros to extend base clojure"}
   (:require [clojure.core.strint :refer [<<]]
             [clj-return-from.core :refer [block]]
             [clojure.java.io :as io]))
@@ -120,7 +123,7 @@ Element ~{name} is not a symbol")))
             `(let [~(nth form 1) ~(nth form 2)]
                (allow-toplevel-const ~@(rest code)))
             (oops "Const form is invalid ~{form}"))
-          (if (= (count (rest code)) 0)
+          (if (empty? (rest code))
              (first code)
              `(do ~(first code)
                   (allow-toplevel-const ~@(rest code)))))))))
