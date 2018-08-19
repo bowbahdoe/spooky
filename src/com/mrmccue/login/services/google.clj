@@ -9,7 +9,7 @@
            [org.openqa.selenium.support.ui WebDriverWait ExpectedConditions])
   (:require [com.mrmccue.login.services.core :refer [Service login logout required-str]]
             [com.mrmccue.login.services.selenium :refer [*make-selenium-driver*]]
-            [com.mrmccue.login.config :refer [*config*]]))
+            [com.mrmccue.config :refer [*config*]]))
 
 (defn- find-form-by-xpath [driver xpath]
   (let [wait (WebDriverWait. driver 10)]

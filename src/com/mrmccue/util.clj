@@ -2,7 +2,9 @@
   ^{:author "Ethan McCue"
     :email "emccue@live.com"
     :doc "Helpful utility functions."}
-  (:require [com.mrmccue.macros :refer [oops]])
+  (:require [com.mrmccue.macros :refer [oops]]
+            [clojure.reflect]
+            [clojure.pprint :refer [print-table]])
   (:import [java.security MessageDigest]
            [java.nio.charset StandardCharsets]))
 
@@ -45,11 +47,12 @@
         hex-str (format "%x" (BigInteger. bytes))]
     hex-str))
 
-(defn filtermap [f list]
+(defn filtermap
   "Maps the function over the list and removes any nils"
+  [f list]
   (filter (complement nil?) (map f list)))
 
-(defn count-from [start sym stop]
+(defn count-from
   "Provides a downto and upto similar to the ruby methods
   of the same name on integers. Used for a more fluent
   inclusive range syntax.
@@ -60,6 +63,7 @@
   (count-from 0 'down-to 0) => (0)
   (count-from 0 'down-to 10) => (0)
   (count-from 10 'up-to 0) => (10)"
+  [start sym stop]
   (let [if-empty-just-start (fn [l]
                               ;; The ruby version has behaviour
                               ;; where the first number in the
@@ -77,3 +81,9 @@
     (if (contains? allowed-counting-fns sym)
       ((get allowed-counting-fns sym) start stop)
       (oops "Invalid counting procedure. expected one of ~(keys allowed-counting-fns)"))))
+
+(defn obj-methods [obj]
+  (print-table
+    (sort-by :name
+               (filter :exception-types
+                       (:members (clojure.reflect/reflect obj))))))

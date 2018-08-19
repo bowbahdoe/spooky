@@ -1,6 +1,6 @@
 (ns
   ^{:author "Ethan McCue"}
-  com.mrmccue.login.config
+  com.mrmccue.config
   (:require [clojure.java.io :as io])
   (:import [java.util Properties]
            [org.apache.commons.io.input CharSequenceReader]

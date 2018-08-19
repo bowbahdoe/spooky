@@ -1,0 +1,54 @@
+{:objects
+ {:PodcastEpisode
+  {:fields {:guid {:type String}
+            :title {:type String}
+            :description {:type String}
+            :explicit {:type Boolean}
+            :image {:type String}
+            :published {:type String}
+            :duration {:type Int}
+            :categories {:type (list String)}
+            :url {:type String}}}
+  :PodcastDescription
+  {:fields {:short {:type String}
+            :long {:type String}}}
+  :PodcastOwner
+  {:fields {:name {:type String}
+            :email {:type String}}}
+  :Podcast
+  {:fields {:title {:type String}
+            :description {:type :PodcastDescription}
+            :link {:type String}
+            :image {:type String}
+            :language {:type String}
+            :copyright {:type String}
+            :updated {:type String}
+            :explicit {:type Boolean}
+            :categories {:type (list String)}
+            :author {:type String}
+            :owner {:type :PodcastOwner}
+            :episodes {:type (list :PodcastEpisode)}}}
+  :PodcastSearchResult
+  {:fields {:artist {:type String}
+            :collection {:type String}
+            :collection_url {:type String}
+            :track {:type String}
+            :feedUrl {:type String}
+            :feed {:type :Podcast
+                   :resolve :SearchResult/feed}
+            :image {:type String}
+            :release {:type String}
+            :track_count {:type Int}
+            :explicit {:type Boolean}
+            :genres {:type (list String)}
+            :images {:type (list String)}}}}
+
+ :queries
+ {:search
+  {:type (list :PodcastSearchResult)
+   :args {:query {:type (non-null String)}}
+   :resolve :query/search}
+  :feed
+  {:type :Podcast
+   :args {:url {:type (non-null String)}}
+   :resolve :query/feed}}}
