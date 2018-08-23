@@ -7,16 +7,17 @@
             [hiccup.core :as hiccup]
             [com.walmartlabs.lacinia :as lacinia]))
 
-(def default-graphiql-version "0.11.11")
+(def ^{:private true}
+  default-graphiql-version "0.11.11")
 
-(defn graphiql-page-hiccup [& {:keys [graphiql_html_title
-                                      graphiql_version
-                                      result
-                                      variables
-                                      operation_name
-                                      query]
-                               :or   {graphiql_html_title "GraphiQl"
-                                      graphiql_version default-graphiql-version}}]
+(defn- graphiql-page-hiccup [& {:keys [graphiql_html_title
+                                       graphiql_version
+                                       result
+                                       variables
+                                       operation_name
+                                       query]
+                                :or   {graphiql_html_title "GraphiQl"
+                                       graphiql_version default-graphiql-version}}]
   [:html
    [:head
     [:title graphiql_html_title]
@@ -126,14 +127,14 @@
    :headers {"content-type" "text/html"}
    :body data})
 
-(defn render-graphiql [req]
+(defn- render-graphiql [req]
   (html-resp 200
              (hiccup/html (graphiql-page-hiccup :result nil
                                                 :variables nil
                                                 :operation_name nil
                                                 :query nil))))
 
-(defn extract-gql-args
+(defn- extract-gql-args
   "Given a request, will extract the operationName,
   the query, and any variables passed alongside the query."
   [req]
