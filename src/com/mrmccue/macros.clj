@@ -209,7 +209,7 @@ Element ~{name} is not a symbol")))
   (cons
     `symbol-several
     (for [form forms]
-      `(str '~form " => " ~form "\n"))))
+      `(str '~form " => " ~form ""))))
 
 (defmacro doseq-indexed
   "The doseq-indexed macro - by Tim Baldridge

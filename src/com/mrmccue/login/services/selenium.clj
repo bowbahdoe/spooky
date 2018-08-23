@@ -5,8 +5,11 @@
 ;; Make sure chrome driver is installed
 (.setup (WebDriverManager/chromedriver))
 
-;; Any Service that needs to use selenium for its implementation
-;; should use this to create its driver to the browser.
-(def ^:dynamic *make-selenium-driver*
+;;
+(def ^{:dynamic true
+       :doc "Any Service that needs to use selenium for its
+          implementation should use this to create its driver
+          to the browser."}
+  *make-selenium-driver*
   (fn [] (ChromeDriver. (doto (ChromeOptions.)
                           (.setHeadless true)))))

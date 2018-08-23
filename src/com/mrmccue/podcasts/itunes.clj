@@ -4,7 +4,6 @@
             [clj-http.client :as client])
   (:import [java.net URLEncoder]
            [java.util List]
-           [java.util.function Function]
            [java.util.stream Collectors]))
 
 (defn as-json [{:keys [body]}]
@@ -21,7 +20,7 @@
                                              "UTF-8"))
         stringified-pairs (for [[k v] pairs]
                             (str (encode k) "=" (encode v)))
-        query-str (-> stringified-pairs
+        query-str (-> ^List stringified-pairs
                       (.stream)
                       (.collect (Collectors/joining "&")))]
      query-str))
@@ -32,19 +31,48 @@
         url (<< "https://itunes.apple.com/search?~{search-query}")]
     (-> (client/get url) as-json)))
 
+(defn- largest-key-by-prefix
+  "For non-namespaced keys in the format {prefix}{int}
+  like artworkUrl500, finds the largest of those keys
+  in the given map by the value of the trailing number
+
+  Ex. (largest-key-by-prefix {} \"a\") => nil
+      (largest-key-by-prefix {:a1 0} \"a\") => :a1
+      (largest-key-by-prefix {:a1 0 :a2 0 :a300 0 :b 0} \"a\") => :a300"
+  [m prefix]
+  (let [prefixed-keys (->> (keys m)
+                           (map name)
+                           (filter (fn [property]
+                                     (.startsWith property
+                                                  prefix))))
+        key-sizes (->> (for [k prefixed-keys]
+                         (.substring k
+                                     (count prefix)))
+                       (map #(Long/valueOf ^String % 10)))]
+    (if (empty? key-sizes)
+      nil
+      (keyword (str prefix (apply max key-sizes))))))
+
+(defn- largest-artwork-url
+  "Given the search results from itunes, returns the
+  artwork url that is for the thumbnail of the largest
+  resolution available."
+  [search-results]
+  (get search-results
+       (largest-key-by-prefix search-results "artworkUrl")))
+
 (defn normalize-itunes-response [itunes-response]
   (for [result (:results itunes-response)]
-    (let [_ result]
-      {:artist (:artistName _)
-       :collection (:collectionName _)
-       :collection_url (:collectionViewUrl _)
-       :track (:trackName _)
-       :feedUrl (:feedUrl _)
-       :image ""
-       :release (:releaseDate _)
-       :track_count (:trackCount _)
-       :explicit (= (:collectionExplicitness _) "explicit")
-       :genres (:genres _)
-       :images (:images _)})))
+    {:artist         (:artistName result)
+     :collection     (:collectionName result)
+     :collection_url (:collectionViewUrl result)
+     :track          (:trackName result)
+     :feedUrl        (:feedUrl result)
+     :image          (largest-artwork-url result)
+     :release        (:releaseDate result)
+     :track_count    (:trackCount result)
+     :explicit       (= (:collectionExplicitness result) "explicit")
+     :genres         (:genres result)
+     :images         (:images result)}))
 
 (def normalized-search (comp normalize-itunes-response search-podcasts))

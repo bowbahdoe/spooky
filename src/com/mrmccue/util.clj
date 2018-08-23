@@ -57,12 +57,12 @@
   of the same name on integers. Used for a more fluent
   inclusive range syntax.
 
-  (count-from 0 'up-to 10) => (0 1 2 3 4 5 6 7 8 9 10)
-  (count-from 10 'down-to 0) => (10 9 8 7 6 5 4 3 2 1 0)
-  (count-from 0 'up-to 0) => (0)
-  (count-from 0 'down-to 0) => (0)
-  (count-from 0 'down-to 10) => (0)
-  (count-from 10 'up-to 0) => (10)"
+  (count-from 0 :up-to 10) => (0 1 2 3 4 5 6 7 8 9 10)
+  (count-from 10 :down-to 0) => (10 9 8 7 6 5 4 3 2 1 0)
+  (count-from 0 :up-to 0) => (0)
+  (count-from 0 :down-to 0) => (0)
+  (count-from 0 :down-to 10) => (0)
+  (count-from 10 :up-to 0) => (10)"
   [start sym stop]
   (let [if-empty-just-start (fn [l]
                               ;; The ruby version has behaviour
@@ -72,10 +72,10 @@
                               ;; empty sequence that might be produced
                               ;; by the built in range function.
                               (if (empty? l) (list start) l))
-        allowed-counting-fns {'up-to (fn [start end]
+        allowed-counting-fns {:up-to (fn [start end]
                                        (if-empty-just-start
                                          (range start (inc end))))
-                              'down-to (fn [start end]
+                              :down-to (fn [start end]
                                          (if-empty-just-start
                                            (range start (dec end) -1)))}]
     (if (contains? allowed-counting-fns sym)

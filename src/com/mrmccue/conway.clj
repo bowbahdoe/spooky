@@ -9,7 +9,6 @@
   ([]
    {:alive #{}}))
 
-
 (defn make-cell [x y]
   {:x x :y y})
 
@@ -54,12 +53,10 @@
                                 (neighboring-cells cell)))
         count-of-neighbors (frequencies all-neighbors)
         has-3-neighbors (filter
-                          (fn [cell]
-                            (= (get count-of-neighbors cell) 3))
+                          (fn [cell] (= (get count-of-neighbors cell) 3))
                           (keys count-of-neighbors))
         to-be-born (filter
-                     (fn [cell]
-                       (nil? (get alive cell)))
+                     (fn [cell] (nil? (get alive cell)))
                      has-3-neighbors)]
     (set to-be-born)))
 
@@ -120,34 +117,35 @@
 (def point-size 15)
 (def square-color Color/BLACK)
 
-(defn game-panel [game-of-life-atom]
-  (proxy [JPanel ActionListener KeyListener] []
-    (paintComponent [g]
-      (proxy-super paintComponent g)
-      (let [game-of-life @game-of-life-atom]
-        (doseq [{:keys [x y]} (filled game-of-life)]
-          (.setColor g square-color)
-          (.fillRect g
-                     (* x point-size)
-                     (* y point-size)
-                     point-size
-                     point-size))))
-    (getPreferredSize []
-      (Dimension. (* (inc field-width) point-size)
-                  (* (inc field-height) point-size)))
-    ;; ActionListener
-    (actionPerformed [_]
-      (.repaint this))
-    ;; KeyListener
-    (keyPressed [_]
-      (swap! game-of-life-atom advance))
-    (keyReleased [_])
-    (keyTyped [_])))
+(defn game-panel [initial-game-of-life-state]
+  (let [game-of-life-atom (atom initial-game-of-life-state)]
+    (proxy [JPanel ActionListener KeyListener] []
+      (paintComponent [g]
+        (proxy-super paintComponent g)
+        (let [game-of-life @game-of-life-atom]
+          (doseq [{:keys [x y]} (filled game-of-life)]
+            (.setColor g square-color)
+            (.fillRect g
+                       (* x point-size)
+                       (* y point-size)
+                       point-size
+                       point-size))))
+      (getPreferredSize []
+        (Dimension. (* (inc field-width) point-size)
+                    (* (inc field-height) point-size)))
+      ;; ActionListener
+      (actionPerformed [_]
+        (.repaint this))
+      ;; KeyListener
+      (keyPressed [_]
+        (swap! game-of-life-atom advance))
+      (keyReleased [_])
+      (keyTyped [_]))))
 
 (defn game []
-  (let [game-of-life-atom (atom (make-game-of-life starting-cells))
+  (let [game-of-life (make-game-of-life starting-cells)
         frame (JFrame. "Conways Game of Life")
-        panel (game-panel game-of-life-atom)
+        panel (game-panel game-of-life)
         timer (Timer. (/ 1 60) panel)
         _ (.setFocusable panel true)
         _ (.addKeyListener panel panel)
