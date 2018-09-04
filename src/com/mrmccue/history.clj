@@ -3,16 +3,16 @@
             [clojure.core.strint :refer [<<]])
   (:use [com.mrmccue.macros]))
 
-(defrecord -History
+(defrecord History
   [current forward back]
   Object
   (toString [this]
-    (<< "-History~(m current forward back)")))
+    (<< "History~(m current forward back)")))
 
 (defn make-history
   "Creates a new history store starting at the given 'origin'"
   [start-with]
-  (-History. start-with () ()))
+  (History. start-with () ()))
 
 (defn forward
   "Moves forward in the history. If there is nothing forward,
@@ -51,7 +51,7 @@
 
 ;; Maps the given function over the history.
 ;; Turns a history of a into a history of b.
-(defmethod fmap -History
+(defmethod fmap History
   [f history]
   (-> history
       (assoc :back (map f (:back history)))

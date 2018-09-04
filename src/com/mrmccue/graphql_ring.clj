@@ -165,7 +165,9 @@
   [req]
   (not (contains? #{:get :post} (:request-method req))))
 
-(defn- request-wants-html? [req]
+(defn- request-wants-html?
+  "Does the request want html more than json"
+  [req]
   (let [accept (get (:headers req) "accept")]
     (clojure.string/includes? accept "text/html")))
 
@@ -187,7 +189,7 @@
   (letfn [(show-graphiql? [req]
             (and graphiql
                  (= (:request-method req) :get)
-                 (or (= (get (:params req) "raw") "true")
+                 (or (not= (get (:params req) "raw") "true")
                      (request-wants-html? req))))
           (prettify-response? [req]
             (or pretty

@@ -9,8 +9,6 @@
             [ring.adapter.jetty :as jetty]
             [ring.middleware.json :as json-middleware]
             [cheshire.core :as cheshire]
-            [com.mrmccue.login.services.google :as google]
-            [com.mrmccue.login.services.core :refer [login]]
             [com.mrmccue.config :refer [*config* config-val]]
             [com.mrmccue.podcasts.gql :as gql]
             [com.mrmccue.graphql-ring :refer [graphql-view]]
@@ -21,9 +19,6 @@
                               :graphiql true))
 (defroutes main-routes
            (GET "/session_info" [] (fn [req] (str (:session req))))
-           (GET "/google_credentials" []
-             (fn [req] {:body (login google/service {:email (config-val *config* "google.email")
-                                                     :password (config-val *config* "google.password")})}))
            (POST "/graphql" [] gql-routes)
            (GET "/graphql" [] gql-routes)
            (route/resources "/")
