@@ -42,7 +42,19 @@
                  [com.stuartsierra/component "0.3.2"]
                  [io.pedestal/pedestal.service       "0.5.4"]
                  [io.pedestal/pedestal.service-tools "0.5.4"] ;; Only needed for ns-watching; WAR tooling
-                 [io.pedestal/pedestal.jetty         "0.5.4"]]
+                 [io.pedestal/pedestal.jetty         "0.5.4"]
+                 ;; -- Deep Learning Deps START
+                 ;; https://mvnrepository.com/artifact/org.deeplearning4j/deeplearning4j-core
+                 [org.deeplearning4j/deeplearning4j-core "1.0.0-beta2"]
+                 ;; https://mvnrepository.com/artifact/org.deeplearning4j/deeplearning4j-modelimport
+                 [org.deeplearning4j/deeplearning4j-modelimport "1.0.0-beta2"]
+                 ;; https://mvnrepository.com/artifact/org.nd4j/nd4j-native-platform
+                 [org.nd4j/nd4j-native-platform "1.0.0-beta2"]
+                 ;; https://mvnrepository.com/artifact/org.datavec/datavec-api
+                 [org.datavec/datavec-api "1.0.0-beta2"]
+                 [org.apache.poi/poi-ooxml "3.17"]
+                 [org.apache.poi/poi "3.17"]]
+                 ;; -- END
 
 
   :ring {:handler com.mrmccue.podcasts.core/app}
