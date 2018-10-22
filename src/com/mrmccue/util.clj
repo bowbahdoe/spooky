@@ -5,7 +5,7 @@
   (:require [com.mrmccue.macros :refer [oops]]
             [clojure.reflect]
             [clojure.pprint :refer [print-table]])
-  (:import [java.security MessageDigest]
+  (:import [java.security MessageDigest SecureRandom]
            [java.nio.charset StandardCharsets]))
 
 ;; https://stackoverflow.com/questions/3249334/test-whether-a-list-contains-a-specific-value-in-clojure
@@ -40,17 +40,33 @@
                     [key val])))))
 
 (defn sha-512
-  "Gets the SHA-512 of a UTF-8 String"
+  "Gets the SHA-512 of a UTF-8 String. Returns a byte array"
   [str]
   (let [bytes (-> (MessageDigest/getInstance "SHA-512")
                   (.digest (.getBytes str StandardCharsets/UTF_8)))
         hex-str (format "%x" (BigInteger. bytes))]
     hex-str))
 
+(defn get-salt-sha1prng
+  "Gets a random byte array to use as a salt in a cryptographic hash"
+  ([salt-length]
+   (.generateSeed (SecureRandom/getInstance "SHA1PRNG") salt-length))
+  ([]
+   (get-salt-sha1prng 32)))
+
 (defn filtermap
-  "Maps the function over the list and removes any nils"
+  "Maps the function over the list and removes any nils
+  from the resulting list."
   [f list]
   (filter (complement nil?) (map f list)))
+
+(defn enumerate
+  "Given a sequence, returns a sequence of pairs of
+  each item of the sequence with its index.
+
+  ((0 item-1) (1 item-2) (2 item-3) ...)"
+  [seq]
+  (map vector (range) seq))
 
 (defn count-from
   "Provides a downto and upto similar to the ruby methods
@@ -81,6 +97,23 @@
     (if (contains? allowed-counting-fns sym)
       ((get allowed-counting-fns sym) start stop)
       (oops "Invalid counting procedure. expected one of ~(keys allowed-counting-fns)"))))
+
+(defn try-in-sequence
+  "Tries the given list of procedures in order and
+  if one throws an Exception, tries the next in series.
+
+  If a procedure succeeds, that value is returned.
+
+  If none of the procedures succeed, then the given
+  default-value is returned."
+  [expressions default-value]
+  (if (empty? expressions)
+    default-value
+    (try
+      ((first expressions))
+      (catch Exception _#
+        (try-in-sequence (rest expressions)
+                         default-value)))))
 
 (defn obj-methods [obj]
   (print-table

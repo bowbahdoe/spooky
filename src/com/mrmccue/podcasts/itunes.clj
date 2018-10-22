@@ -6,7 +6,7 @@
            [java.util List]
            [java.util.stream Collectors]))
 
-(defn as-json [{:keys [body]}]
+(defn- as-json [{:keys [body]}]
   (cheshire/decode body keyword))
 
 (defn make-query-str

@@ -1,6 +1,7 @@
 (defproject spooky "0.1.0"
   :description "Generic Remote Login Service"
-  :repositories [["Icosillion Repository" "https://maven.icosillion.com/artifactory/open-source/"]]
+  :repositories [["Icosillion Repository" "https://maven.icosillion.com/artifactory/open-source/"]
+                 ["WSO2" "http://maven.wso2.org/nexus/content/repositories/public/"]]
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [ch.qos.logback/logback-classic "1.2.3"]
                  [org.clojure/core.async "0.4.474"]
@@ -52,9 +53,15 @@
                  [org.nd4j/nd4j-native-platform "1.0.0-beta2"]
                  ;; https://mvnrepository.com/artifact/org.datavec/datavec-api
                  [org.datavec/datavec-api "1.0.0-beta2"]
-                 [org.apache.poi/poi-ooxml "3.17"]
-                 [org.apache.poi/poi "3.17"]]
                  ;; -- END
+                 [org.apache.poi/poi-ooxml "3.17"]
+                 [org.apache.poi/poi "3.17"]
+                 ;; https://mvnrepository.com/artifact/org.apache.axis2.wso2/axis2
+                 [org.apache.axis2.wso2/axis2 "1.6.2.wso2v13"]
+                 ;; https://mvnrepository.com/artifact/org.apache.axis2.wso2/axis2-client
+                 [org.apache.axis2.wso2/axis2-client "1.6.2.wso2v13"]
+                 ;; https://mvnrepository.com/artifact/org.apache.axis2/axis2-java2wsdl
+                 [org.apache.axis2/axis2-java2wsdl "1.7.8"]]
 
 
   :ring {:handler com.mrmccue.podcasts.core/app}

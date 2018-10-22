@@ -235,7 +235,3 @@ Element ~{name} is not a symbol")))
   [filename]
   (-> (io/resource filename)
       (slurp)))
-
-;; ----------------------------------------------------------------------------
-(defn enumerate [l]
-  (map vector (range) l))
