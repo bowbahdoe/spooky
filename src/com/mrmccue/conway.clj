@@ -147,11 +147,11 @@
         frame (JFrame. "Conways Game of Life")
         panel (game-panel game-of-life)
         timer (Timer. (/ 1 60) panel)
-        _ (.setFocusable panel true)
-        _ (.addKeyListener panel panel)
-        _ (.add frame ^JPanel panel)
-        _ (.pack frame)
-        _ (.setDefaultCloseOperation frame JFrame/DISPOSE_ON_CLOSE)
-        _ (.setVisible frame true)
-        _ (.start timer)]
+        _ (do (.setFocusable panel true)
+              (.addKeyListener panel panel)
+              (.add frame ^JPanel panel)
+              (.pack frame)
+              (.setDefaultCloseOperation frame JFrame/DISPOSE_ON_CLOSE)
+              (.setVisible frame true)
+              (.start timer))]
     frame))
