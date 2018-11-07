@@ -53,6 +53,7 @@
   :ring {:handler com.mrmccue.podcasts.core/app}
   :plugins [[lein-ring "0.12.1"]
             [lein-codox "0.10.4"]]
+
   :source-paths ["src/clj"]
   :java-source-paths ["src/java/"]
   :main ^:skip-aot com.mrmccue.podcasts.core

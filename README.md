@@ -7,6 +7,8 @@ so that needs to be fixed but as of right now to be able to run
 and work with this repo you will need:
 
 <ul>
+    <li> JDK 8 or above. It might work with 7, it'll probably work with
+    anything higher than 8, I just only have 8 on my laptop right now.
     <li>
      IntelliJ with the <a href="https://cursive-ide.com/"> Cursive </a>
      and <a href = "https://klazuka.github.io/intellij-elm/"> Elm Language </a>
