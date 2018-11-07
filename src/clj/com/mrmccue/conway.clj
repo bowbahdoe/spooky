@@ -1,7 +1,8 @@
 (ns com.mrmccue.conway
   (:import [java.awt Color Dimension Graphics]
            [javax.swing JPanel JFrame Timer]
-           [java.awt.event ActionListener KeyListener]))
+           [java.awt.event ActionListener KeyListener])
+  (:require [clojure.set]))
 
 (defn make-game-of-life
   ([initially-filled]
