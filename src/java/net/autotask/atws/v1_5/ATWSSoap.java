@@ -34,31 +34,31 @@ public interface ATWSSoap {
      * getThresholdAndUsageInfo function to get the threshold, timeframe and current number of external request.
      */
     @WebMethod(action = "http://autotask.net/ATWS/v1_5/getThresholdAndUsageInfo")
-    @RequestWrapper(localName = "getThresholdAndUsageInfo", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.GetThresholdAndUsageInfo")
-    @ResponseWrapper(localName = "getThresholdAndUsageInfoResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.GetThresholdAndUsageInfoResponse")
+    @RequestWrapper(localName = "getThresholdAndUsageInfo", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "GetThresholdAndUsageInfo")
+    @ResponseWrapper(localName = "getThresholdAndUsageInfoResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "GetThresholdAndUsageInfoResponse")
     @WebResult(name = "getThresholdAndUsageInfoResult", targetNamespace = "http://autotask.net/ATWS/v1_5/")
-    public net.autotask.atws.v1_5.ATWSResponse getThresholdAndUsageInfo();
+    public ATWSResponse getThresholdAndUsageInfo();
 
     /**
      * Create Attachment function for version 1.5
      */
     @WebMethod(operationName = "CreateAttachment", action = "http://autotask.net/ATWS/v1_5/CreateAttachment")
-    @RequestWrapper(localName = "CreateAttachment", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.CreateAttachment")
-    @ResponseWrapper(localName = "CreateAttachmentResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.CreateAttachmentResponse")
+    @RequestWrapper(localName = "CreateAttachment", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "CreateAttachment")
+    @ResponseWrapper(localName = "CreateAttachmentResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "CreateAttachmentResponse")
     @WebResult(name = "CreateAttachmentResult", targetNamespace = "http://autotask.net/ATWS/v1_5/")
     public long createAttachment(
         @WebParam(name = "attachment", targetNamespace = "http://autotask.net/ATWS/v1_5/")
-        net.autotask.atws.v1_5.Attachment attachment
+                Attachment attachment
     );
 
     /**
      * Gets information about what zone/URL the client should use.
      */
     @WebMethod(action = "http://autotask.net/ATWS/v1_5/getZoneInfo")
-    @RequestWrapper(localName = "getZoneInfo", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.GetZoneInfo")
-    @ResponseWrapper(localName = "getZoneInfoResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.GetZoneInfoResponse")
+    @RequestWrapper(localName = "getZoneInfo", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "GetZoneInfo")
+    @ResponseWrapper(localName = "getZoneInfoResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "GetZoneInfoResponse")
     @WebResult(name = "getZoneInfoResult", targetNamespace = "http://autotask.net/ATWS/v1_5/")
-    public net.autotask.atws.v1_5.ATWSZoneInfo getZoneInfo(
+    public ATWSZoneInfo getZoneInfo(
         @WebParam(name = "UserName", targetNamespace = "http://autotask.net/ATWS/v1_5/")
         java.lang.String userName
     );
@@ -67,20 +67,20 @@ public interface ATWSSoap {
      * create function will insert any new entities into the Autotask system.
      */
     @WebMethod(action = "http://autotask.net/ATWS/v1_5/create")
-    @RequestWrapper(localName = "create", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.Create")
-    @ResponseWrapper(localName = "createResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.CreateResponse")
+    @RequestWrapper(localName = "create", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "Create")
+    @ResponseWrapper(localName = "createResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "CreateResponse")
     @WebResult(name = "createResult", targetNamespace = "http://autotask.net/ATWS/v1_5/")
-    public net.autotask.atws.v1_5.ATWSResponse create(
+    public ATWSResponse create(
         @WebParam(name = "Entities", targetNamespace = "http://autotask.net/ATWS/v1_5/")
-        net.autotask.atws.v1_5.ArrayOfEntity entities
+                ArrayOfEntity entities
     );
 
     /**
      * Delete Attachment function for version 1.5
      */
     @WebMethod(operationName = "DeleteAttachment", action = "http://autotask.net/ATWS/v1_5/DeleteAttachment")
-    @RequestWrapper(localName = "DeleteAttachment", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.DeleteAttachment")
-    @ResponseWrapper(localName = "DeleteAttachmentResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.DeleteAttachmentResponse")
+    @RequestWrapper(localName = "DeleteAttachment", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "DeleteAttachment")
+    @ResponseWrapper(localName = "DeleteAttachmentResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "DeleteAttachmentResponse")
     @WebResult(name = "DeleteAttachmentResult", targetNamespace = "http://autotask.net/ATWS/v1_5/")
     public java.lang.String deleteAttachment(
         @WebParam(name = "attachmentId", targetNamespace = "http://autotask.net/ATWS/v1_5/")
@@ -91,8 +91,8 @@ public interface ATWSSoap {
      * Returns the requested markup format for a given invoice.
      */
     @WebMethod(operationName = "GetInvoiceMarkup", action = "http://autotask.net/ATWS/v1_5/GetInvoiceMarkup")
-    @RequestWrapper(localName = "GetInvoiceMarkup", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.GetInvoiceMarkup")
-    @ResponseWrapper(localName = "GetInvoiceMarkupResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.GetInvoiceMarkupResponse")
+    @RequestWrapper(localName = "GetInvoiceMarkup", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "GetInvoiceMarkup")
+    @ResponseWrapper(localName = "GetInvoiceMarkupResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "GetInvoiceMarkupResponse")
     @WebResult(name = "GetInvoiceMarkupResult", targetNamespace = "http://autotask.net/ATWS/v1_5/")
     public java.lang.String getInvoiceMarkup(
         @WebParam(name = "InvoiceId", targetNamespace = "http://autotask.net/ATWS/v1_5/")
@@ -105,10 +105,10 @@ public interface ATWSSoap {
      * Default GetUDFInfo function, returns information for version 1.5
      */
     @WebMethod(action = "http://autotask.net/ATWS/v1_5/getUDFInfo")
-    @RequestWrapper(localName = "getUDFInfo", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.GetUDFInfo")
-    @ResponseWrapper(localName = "getUDFInfoResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.GetUDFInfoResponse")
+    @RequestWrapper(localName = "getUDFInfo", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "GetUDFInfo")
+    @ResponseWrapper(localName = "getUDFInfoResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "GetUDFInfoResponse")
     @WebResult(name = "getUDFInfoResult", targetNamespace = "http://autotask.net/ATWS/v1_5/")
-    public net.autotask.atws.v1_5.ArrayOfField getUDFInfo(
+    public ArrayOfField getUDFInfo(
         @WebParam(name = "psTable", targetNamespace = "http://autotask.net/ATWS/v1_5/")
         java.lang.String psTable
     );
@@ -117,10 +117,10 @@ public interface ATWSSoap {
      * query function to extract data, sXML is in QueryXML format.
      */
     @WebMethod(action = "http://autotask.net/ATWS/v1_5/query")
-    @RequestWrapper(localName = "query", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.Query")
-    @ResponseWrapper(localName = "queryResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.QueryResponse")
+    @RequestWrapper(localName = "query", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "Query")
+    @ResponseWrapper(localName = "queryResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "QueryResponse")
     @WebResult(name = "queryResult", targetNamespace = "http://autotask.net/ATWS/v1_5/")
-    public net.autotask.atws.v1_5.ATWSResponse query(
+    public ATWSResponse query(
         @WebParam(name = "sXML", targetNamespace = "http://autotask.net/ATWS/v1_5/")
         java.lang.String sXML
     );
@@ -129,34 +129,34 @@ public interface ATWSSoap {
      * update function will update all entities with the new values passed to it.
      */
     @WebMethod(action = "http://autotask.net/ATWS/v1_5/update")
-    @RequestWrapper(localName = "update", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.Update")
-    @ResponseWrapper(localName = "updateResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.UpdateResponse")
+    @RequestWrapper(localName = "update", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "Update")
+    @ResponseWrapper(localName = "updateResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "UpdateResponse")
     @WebResult(name = "updateResult", targetNamespace = "http://autotask.net/ATWS/v1_5/")
-    public net.autotask.atws.v1_5.ATWSResponse update(
+    public ATWSResponse update(
         @WebParam(name = "Entities", targetNamespace = "http://autotask.net/ATWS/v1_5/")
-        net.autotask.atws.v1_5.ArrayOfEntity entities
+                ArrayOfEntity entities
     );
 
     /**
      * delete function will delete all the entities passed to it.
      */
     @WebMethod(action = "http://autotask.net/ATWS/v1_5/delete")
-    @RequestWrapper(localName = "delete", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.Delete")
-    @ResponseWrapper(localName = "deleteResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.DeleteResponse")
+    @RequestWrapper(localName = "delete", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "Delete")
+    @ResponseWrapper(localName = "deleteResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "DeleteResponse")
     @WebResult(name = "deleteResult", targetNamespace = "http://autotask.net/ATWS/v1_5/")
-    public net.autotask.atws.v1_5.ATWSResponse delete(
+    public ATWSResponse delete(
         @WebParam(name = "Entities", targetNamespace = "http://autotask.net/ATWS/v1_5/")
-        net.autotask.atws.v1_5.ArrayOfEntity entities
+                ArrayOfEntity entities
     );
 
     /**
      * Default GetFieldInfo function, returns information for version 1.5
      */
     @WebMethod(operationName = "GetFieldInfo", action = "http://autotask.net/ATWS/v1_5/GetFieldInfo")
-    @RequestWrapper(localName = "GetFieldInfo", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.GetFieldInfo")
-    @ResponseWrapper(localName = "GetFieldInfoResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.GetFieldInfoResponse")
+    @RequestWrapper(localName = "GetFieldInfo", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "GetFieldInfo")
+    @ResponseWrapper(localName = "GetFieldInfoResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "GetFieldInfoResponse")
     @WebResult(name = "GetFieldInfoResult", targetNamespace = "http://autotask.net/ATWS/v1_5/")
-    public net.autotask.atws.v1_5.ArrayOfField getFieldInfo(
+    public ArrayOfField getFieldInfo(
         @WebParam(name = "psObjectType", targetNamespace = "http://autotask.net/ATWS/v1_5/")
         java.lang.String psObjectType
     );
@@ -165,8 +165,8 @@ public interface ATWSSoap {
      * GetWsdlVersion function to get the current wsdl version for the zone.
      */
     @WebMethod(operationName = "GetWsdlVersion", action = "http://autotask.net/ATWS/v1_5/GetWsdlVersion")
-    @RequestWrapper(localName = "GetWsdlVersion", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.GetWsdlVersion")
-    @ResponseWrapper(localName = "GetWsdlVersionResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.GetWsdlVersionResponse")
+    @RequestWrapper(localName = "GetWsdlVersion", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "GetWsdlVersion")
+    @ResponseWrapper(localName = "GetWsdlVersionResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "GetWsdlVersionResponse")
     @WebResult(name = "GetWsdlVersionResult", targetNamespace = "http://autotask.net/ATWS/v1_5/")
     public java.lang.String getWsdlVersion();
 
@@ -174,10 +174,10 @@ public interface ATWSSoap {
      * Get Attachment function, returns file attachment info for version 1.5
      */
     @WebMethod(operationName = "GetAttachment", action = "http://autotask.net/ATWS/v1_5/GetAttachment")
-    @RequestWrapper(localName = "GetAttachment", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.GetAttachment")
-    @ResponseWrapper(localName = "GetAttachmentResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "net.autotask.atws.v1_5.GetAttachmentResponse")
+    @RequestWrapper(localName = "GetAttachment", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "GetAttachment")
+    @ResponseWrapper(localName = "GetAttachmentResponse", targetNamespace = "http://autotask.net/ATWS/v1_5/", className = "GetAttachmentResponse")
     @WebResult(name = "GetAttachmentResult", targetNamespace = "http://autotask.net/ATWS/v1_5/")
-    public net.autotask.atws.v1_5.Attachment getAttachment(
+    public Attachment getAttachment(
         @WebParam(name = "attachmentId", targetNamespace = "http://autotask.net/ATWS/v1_5/")
         long attachmentId
     );

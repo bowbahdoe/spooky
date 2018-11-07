@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal">
+    <data-source name="characters" uuid="666cfab6-8274-4bbc-bcbd-b64aeea019d8">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" family="SQLITE" exact-version="0.0" />
+    </data-source>
+    <data-source name="characters [2]" uuid="fa5f52b8-5740-43f5-9fbe-32790a954123">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" family="SQLITE" exact-version="0.0" />
+    </data-source>
+  </component>
+</project>
