@@ -46,15 +46,15 @@
   :pom-plugins [[org.apache.cxf/cxf-codegen-plugin "3.2.6"
                  {:executions ([:execution [:id "generate-sources"]
                                            [:phase "generate-sources"]
-                                           [:configuration ([:sourceRoot "src/"]
+                                           [:configuration ([:sourceRoot "src/java"]
                                                             [:wsdlOptions ([:wsdlOption
                                                                              ([:wsdl "resources/autotask/atws.wsdl"])])])]
                                            [:goals ([:goal "wsdl2java"])]])}]]
   :ring {:handler com.mrmccue.podcasts.core/app}
   :plugins [[lein-ring "0.12.1"]
             [lein-codox "0.10.4"]]
-
-  :java-source-paths ["src/"]
+  :source-paths ["src/clj"]
+  :java-source-paths ["src/java/"]
   :main ^:skip-aot com.mrmccue.podcasts.core
   :target-path "target/%s"
   :resource-paths ["resources/"]

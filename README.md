@@ -43,6 +43,11 @@ For the case of create-elm-app we can use "elm-app eject" or just
 setup the webpack config ourselves and its no big issue, but for now
 the simplicity of the template is worth it.
 
+Also, this is a massive mess so do what you feel like. Just don't force
+push to master and it'll probably be fine. Add some keras notebooks, write cobol
+on clogs, have fun with it.
 
 ## How to get started.
 
+Just message me and have me help you through each step. Its not
+that it is too hard to do on your own, just frustrating probably.
