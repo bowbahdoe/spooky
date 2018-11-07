@@ -23,6 +23,7 @@ def generate_soap_classes(c):
         c.run("lein pom")
         c.run("mvn generate-sources")
     finally:
+        print("Removing generated pom.xml.")
         _remove_if_exists("pom.xml")
 
 
