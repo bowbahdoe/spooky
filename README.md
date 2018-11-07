@@ -55,3 +55,6 @@ on clogs, have fun with it.
 
 Just message me and have me help you through each step. Its not
 that it is too hard to do on your own, just frustrating probably.
+
+If you are able to install everything above correctly, you can see
+possible build tasks by running `invoke --list`.

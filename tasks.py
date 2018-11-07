@@ -4,11 +4,10 @@ Script for handling build tasks for this projects.
 from invoke import task
 from distutils.dir_util import copy_tree
 
+
 @task
 def generate_docs(c):
-    r = c.run("lein codox")
-    print(len(r))
-
+    c.run("lein codox")
 
 @task
 def generate_soap_classes(c):
@@ -17,14 +16,15 @@ def generate_soap_classes(c):
 
 
 @task
-def compile_elm_prod(c, docs=False):
+def compile_elm_prod(c):
     c.run("cd frontend && elm-app build")
     # copy subdirectory example
     from_directory = "frontend/build/"
-    to_directory = "resources/frontend"
+    to_directory = "resources/public"
     copy_tree(from_directory, to_directory)
 
 
 @task
-def production_build(c):
-    pass
+def make_uberjar(c):
+    compile_elm_prod(c)
+    c.run("lein uberjar")
