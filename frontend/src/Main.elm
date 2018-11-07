@@ -9,7 +9,9 @@ import Element.Background as Background
 import Element.Border as Border
 import Element.Events exposing (..)
 import Element.Font as Font
+import Flags
 import Html exposing (Html)
+import Json.Decode
 import Mario.Data
 import Mario.Subs
 import Msg exposing (Msg(..))
@@ -26,27 +28,48 @@ type Page
 type alias Model =
     { navbar : Navbar Msg
     , page : Page
+    , apiUrl : String
     , screenSize : Maybe { width : Int, height : Int }
     }
 
 
-initialModel : Model
-initialModel =
-    { navbar =
-        { logo =
-            Just
-                { url = "https://package.elm-lang.org/assets/favicon.ico"
-                , onSelect = NoOp
+getScreenSize : Cmd Msg
+getScreenSize =
+    let
+        parseViewport { viewport } =
+            ScreenResize (floor viewport.width) (floor viewport.height)
+    in
+    Task.perform parseViewport Browser.Dom.getViewport
+
+
+init : Json.Decode.Value -> ( Model, Cmd Msg )
+init flagsValue =
+    let
+        flags =
+            Flags.decode flagsValue
+
+        initialModel =
+            { navbar =
+                { logo =
+                    Just
+                        { url = "https://package.elm-lang.org/assets/favicon.ico"
+                        , onSelect = NoOp
+                        }
+                , categories =
+                    [ { id = "1", title = "Blog", onSelect = EnterBlog }
+                    , { id = "2", title = "Game", onSelect = EnterMario }
+                    ]
+                , hoveringOver = Nothing
                 }
-        , categories =
-            [ { id = "1", title = "Blog", onSelect = EnterBlog }
-            , { id = "2", title = "Game", onSelect = EnterMario }
-            ]
-        , hoveringOver = Nothing
-        }
-    , page = Blog
-    , screenSize = Nothing
-    }
+            , page = Blog
+            , apiUrl = flags.apiUrl
+            , screenSize = Nothing
+            }
+
+        initialCommands =
+            getScreenSize
+    in
+    ( initialModel, initialCommands )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -112,19 +135,10 @@ subscriptions model =
         ]
 
 
-getScreenSize : Cmd Msg
-getScreenSize =
-    let
-        parseViewport { viewport } =
-            ScreenResize (floor viewport.width) (floor viewport.height)
-    in
-    Task.perform parseViewport Browser.Dom.getViewport
-
-
 main : Program () Model Msg
 main =
     Browser.element
-        { init = \_ -> ( initialModel, getScreenSize )
+        { init = init
         , view = view
         , update = update
         , subscriptions = subscriptions
