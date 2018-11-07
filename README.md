@@ -14,13 +14,15 @@ and work with this repo you will need:
      and <a href = "https://klazuka.github.io/intellij-elm/"> Elm Language </a>
      plugins
     </li>
-    <li> Python 3.6 and <a href="https://pipenv.readthedocs.io/en/latest/"> Pipenv </a>
+    <li> Python 3.6 and the <a href="http://www.pyinvoke.org/"> Invoke </a> command
+    line tool.
     (this is used for the build process right now. LMK if you have better cross platform
     ideas.)
     </li>
     <li> <a href="https://leiningen.org/"> Leiningen </a> (Clojure build tooling)
     <li> Maven (Leiningen generates poms which are used by some build steps)
-    <li> Elm format installed. Follow the instructions in the intelliJ plugin for
+    <li> <a href="https://github.com/avh4/elm-format#atom-elm-format-installation">Elm format</a> installed.
+     Follow the instructions in the IntelliJ plugin for
     configuring it to run on save. This requires a full edition of intelliJ, not
     community.
     </li>
