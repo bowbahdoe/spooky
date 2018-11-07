@@ -18,7 +18,6 @@ def generate_soap_classes(c):
 @task
 def compile_elm_prod(c):
     c.run("cd frontend && elm-app build")
-    # copy subdirectory example
     from_directory = "frontend/build/"
     to_directory = "resources/public"
     copy_tree(from_directory, to_directory)
