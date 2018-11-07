@@ -3,4 +3,5 @@ target/
 .lein-repl-history
 .nrepl-port
 pom.xml
-resources/frontend
+resources/public/*
+src/java/net/autotask/atws/*
