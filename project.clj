@@ -35,9 +35,7 @@
                  [com.novemberain/monger "3.1.0"]
                  [selmer "1.12.0"]
                  [com.stuartsierra/component "0.3.2"]
-                 [io.pedestal/pedestal.service       "0.5.4"]
-                 [io.pedestal/pedestal.service-tools "0.5.4"] ;; Only needed for ns-watching; WAR tooling
-                 [io.pedestal/pedestal.jetty         "0.5.4"]]
+                 [ring-cors "0.1.12"]]
 
 
 

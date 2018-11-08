@@ -4,17 +4,21 @@ import Browser
 import Browser.Dom
 import Browser.Events
 import Data.Navbar as Navbar exposing (Navbar, NavbarCategory)
+import Debug
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Events exposing (..)
 import Element.Font as Font
 import Flags
+import GraphQL.Client.Http as GraphQLClient
 import Html exposing (Html)
+import Http
 import Json.Decode
 import Mario.Data
 import Mario.Subs
 import Msg exposing (Msg(..))
+import Podcasts exposing (searchRequest)
 import Task
 import View.Blog
 import View.Navbar
@@ -67,7 +71,11 @@ init flagsValue =
             }
 
         initialCommands =
-            getScreenSize
+            Cmd.batch
+                [ getScreenSize
+                , GraphQLClient.sendQuery (flags.apiUrl ++ "graphql") (searchRequest "trump")
+                    |> Task.attempt SearchForPodcasts
+                ]
     in
     ( initialModel, initialCommands )
 
@@ -107,6 +115,9 @@ update msg model =
             , Cmd.none
             )
 
+        SearchForPodcasts r ->
+            Debug.log (Debug.toString r) ( model, Cmd.none )
+
 
 view : Model -> Html Msg
 view model =
@@ -135,7 +146,7 @@ subscriptions model =
         ]
 
 
-main : Program () Model Msg
+main : Program Json.Decode.Value Model Msg
 main =
     Browser.element
         { init = init

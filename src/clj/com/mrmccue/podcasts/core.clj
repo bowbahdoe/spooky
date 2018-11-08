@@ -12,7 +12,7 @@
             [com.mrmccue.config :refer [*config* config-val]]
             [com.mrmccue.podcasts.gql :as gql]
             [com.mrmccue.graphql-ring :refer [graphql-view]]
-            [io.pedestal.http :as http])
+            [ring.middleware.cors :refer [wrap-cors]])
   (:gen-class :main true))
 
 (def gql-routes (graphql-view :schema gql/schema
@@ -33,6 +33,8 @@
                  #(if (= "/" %) "/index.html" %)))))
 
 (def app (-> main-routes
+             (wrap-cors :access-control-allow-origin [#".+"]
+                        :access-control-allow-methods [:get :put :post :delete])
              (wrap-dir-index)
              (json-middleware/wrap-json-response)
              (handler/site)))
@@ -40,6 +42,5 @@
 (defn -main
   "This is the main entry point for the application."
   [& args]
-  (println *command-line-args*)
-  (let [port (or (first *command-line-args*) 8080)]
+  (let [port (int (config-val *config* "port"))]
      (jetty/run-jetty app {:port port})))
