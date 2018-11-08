@@ -33,9 +33,16 @@ def generate_soap_classes(c):
         print("Removing generated pom.xml.")
         _remove_if_exists("pom.xml")
 
+
 @task
 def compile_java(c):
     c.run("lein javac")
+
+
+@task
+def start_webpack_server(c):
+    with c.cd("frontend"):
+        c.run("elm-app start")
 
 @task
 def compile_elm_prod(c):
