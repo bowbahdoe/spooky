@@ -58,3 +58,17 @@ that it is too hard to do on your own, just frustrating probably.
 
 If you are able to install everything above correctly, you can see
 possible build tasks by running `invoke --list`.
+
+### To start developing
+Execute the following in two different terminals
+<ul>
+    <li><code>invoke start-hotreload-server</code>
+    <li><code>invoke start-webpack-server</code>
+</ul>
+
+`localhost:3000` will have the Elm frontend and `localhost:8080` 
+will have the Clojure ring server.
+
+### To test it out
+You can make an uberjar with `invoke make-uberjar`, which
+you can run directly with `java -jar`.
