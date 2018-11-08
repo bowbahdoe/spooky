@@ -22,8 +22,5 @@
         <module name="spooky" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="spooky" target="1.5" />
-    </bytecodeTargetLevel>
   </component>
 </project>

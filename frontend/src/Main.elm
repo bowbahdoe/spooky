@@ -4,7 +4,6 @@ import Browser
 import Browser.Dom
 import Browser.Events
 import Data.Navbar as Navbar exposing (Navbar, NavbarCategory)
-import Debug
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
@@ -116,7 +115,7 @@ update msg model =
             )
 
         SearchForPodcasts r ->
-            Debug.log (Debug.toString r) ( model, Cmd.none )
+            ( model, Cmd.none )
 
 
 view : Model -> Html Msg
