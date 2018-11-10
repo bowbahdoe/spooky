@@ -5,7 +5,8 @@ import Json.Decode.Pipeline exposing (optional)
 
 
 type alias Flags =
-    { apiUrl : String }
+    { apiUrl : String
+    }
 
 
 defaultFlags : Flags

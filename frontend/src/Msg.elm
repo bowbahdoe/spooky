@@ -1,16 +1,15 @@
 module Msg exposing (Msg(..))
 
+import Browser exposing (UrlRequest)
 import GraphQL.Client.Http as GraphQLClient
-import Mario.Data
 import Podcasts exposing (SearchResult)
 
 
 type Msg
     = NoOp
-    | EnterHoverNavItem String
-    | LeaveHoverNavItem String
     | EnterBlog
-    | EnterMario
-    | MarioMsg Mario.Data.Msg
+    | EnterPodcasts
     | ScreenResize Int Int -- Width, Height
-    | SearchForPodcasts (Result GraphQLClient.Error (List SearchResult))
+    | SearchBarType String
+    | RecievePodcastSearchResults String (Result GraphQLClient.Error (List SearchResult))
+    | ClickedLink UrlRequest

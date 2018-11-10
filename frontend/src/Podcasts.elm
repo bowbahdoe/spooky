@@ -8,6 +8,7 @@ import GraphQL.Request.Builder
         , extract
         , field
         , list
+        , nullable
         , object
         , queryDocument
         , request
@@ -21,8 +22,8 @@ import Task exposing (Task)
 
 
 type alias SearchResult =
-    { artist : String
-    , collection : String
+    { artist : Maybe String
+    , collection : Maybe String
     }
 
 
@@ -34,8 +35,8 @@ searchQuery =
 
         searchResult =
             object SearchResult
-                |> with (field "artist" [] string)
-                |> with (field "collection" [] string)
+                |> with (field "artist" [] (nullable string))
+                |> with (field "collection" [] (nullable string))
 
         queryRoot =
             extract

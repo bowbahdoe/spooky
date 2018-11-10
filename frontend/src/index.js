@@ -5,7 +5,8 @@ import registerServiceWorker from './registerServiceWorker';
 Elm.Main.init({
   node: document.getElementById('root'),
   flags: {
-    apiUrl : process.env.NODE_ENV === "production" ? "/" : "http://localhost:8080/"
+    apiUrl : process.env.NODE_ENV === "production" ? "/" : "http://localhost:8080/",
+
   }
 });
 

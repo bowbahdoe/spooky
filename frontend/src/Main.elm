@@ -1,38 +1,45 @@
 module Main exposing (main)
 
-import Browser
+import Browser exposing (UrlRequest(..))
 import Browser.Dom
 import Browser.Events
+import Browser.Navigation
 import Data.Navbar as Navbar exposing (Navbar, NavbarCategory)
+import Dict exposing (Dict)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Events exposing (..)
 import Element.Font as Font
+import Element.Input as Input
 import Flags
 import GraphQL.Client.Http as GraphQLClient
 import Html exposing (Html)
 import Http
 import Json.Decode
-import Mario.Data
-import Mario.Subs
 import Msg exposing (Msg(..))
-import Podcasts exposing (searchRequest)
+import Podcasts exposing (SearchResult, searchRequest)
 import Task
+import Url
 import View.Blog
 import View.Navbar
 
 
 type Page
     = Blog
-    | Mario { game : Mario.Data.Game }
+    | Podcasts
 
 
 type alias Model =
-    { navbar : Navbar Msg
+    { navKey : Browser.Navigation.Key
+    , navbar : Navbar Msg
     , page : Page
     , apiUrl : String
     , screenSize : Maybe { width : Int, height : Int }
+    , search :
+        { searchBarContents : String
+        , searchResults : Dict String (List SearchResult)
+        }
     }
 
 
@@ -45,36 +52,48 @@ getScreenSize =
     Task.perform parseViewport Browser.Dom.getViewport
 
 
-init : Json.Decode.Value -> ( Model, Cmd Msg )
-init flagsValue =
+determinePage url =
+    if url.path == "/blog" then
+        Blog
+
+    else if url.path == "/podcasts" then
+        Podcasts
+
+    else
+        Blog
+
+
+init : Json.Decode.Value -> Url.Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
+init flagsValue url navKey =
     let
         flags =
             Flags.decode flagsValue
 
         initialModel =
-            { navbar =
+            { navKey = navKey
+            , navbar =
                 { logo =
                     Just
                         { url = "https://package.elm-lang.org/assets/favicon.ico"
                         , onSelect = NoOp
                         }
                 , categories =
-                    [ { id = "1", title = "Blog", onSelect = EnterBlog }
-                    , { id = "2", title = "Game", onSelect = EnterMario }
+                    [ { id = "0", title = "Podcasts", onSelect = EnterPodcasts }
+                    , { id = "1", title = "Blog", onSelect = EnterBlog }
                     ]
-                , hoveringOver = Nothing
                 }
-            , page = Blog
+            , page = determinePage url
             , apiUrl = flags.apiUrl
             , screenSize = Nothing
+            , search =
+                { searchBarContents = ""
+                , searchResults = Dict.empty
+                }
             }
 
         initialCommands =
             Cmd.batch
-                [ getScreenSize
-                , GraphQLClient.sendQuery (flags.apiUrl ++ "graphql") (searchRequest "trump")
-                    |> Task.attempt SearchForPodcasts
-                ]
+                [ getScreenSize ]
     in
     ( initialModel, initialCommands )
 
@@ -85,25 +104,15 @@ update msg model =
         NoOp ->
             ( model, Cmd.none )
 
-        EnterHoverNavItem id ->
-            ( { model | navbar = Navbar.hoverOver id model.navbar }, Cmd.none )
-
-        LeaveHoverNavItem id ->
-            ( { model | navbar = Navbar.leaveHover model.navbar }, Cmd.none )
-
         EnterBlog ->
-            ( { model | page = Blog }, Cmd.none )
-
-        EnterMario ->
-            ( { model
-                | page =
-                    Mario { game = Mario.Data.defaultGame }
-              }
-            , Cmd.none
+            ( changePage model Blog
+            , Browser.Navigation.pushUrl model.navKey "/blog"
             )
 
-        MarioMsg marioMsg ->
-            ( model, Cmd.none )
+        EnterPodcasts ->
+            ( changePage model Podcasts
+            , Browser.Navigation.pushUrl model.navKey "/podcasts"
+            )
 
         ScreenResize width height ->
             ( { model
@@ -114,22 +123,99 @@ update msg model =
             , Cmd.none
             )
 
-        SearchForPodcasts r ->
+        SearchBarType query ->
+            ( let
+                search =
+                    model.search
+
+                updated =
+                    { search | searchBarContents = query }
+              in
+              { model | search = updated }
+            , GraphQLClient.sendQuery (model.apiUrl ++ "graphql") (searchRequest query)
+                |> Task.attempt (RecievePodcastSearchResults query)
+            )
+
+        RecievePodcastSearchResults query (Ok results) ->
+            let
+                search =
+                    model.search
+
+                updatedSearchResults =
+                    Dict.insert query results model.search.searchResults
+
+                updated =
+                    { search | searchResults = updatedSearchResults }
+            in
+            ( { model | search = updated }, Cmd.none )
+
+        ClickedLink req ->
+            case req of
+                Internal url ->
+                    ( { model | page = determinePage url }
+                    , Browser.Navigation.pushUrl model.navKey (Url.toString url)
+                    )
+
+                External path ->
+                    ( model, Browser.Navigation.load path )
+
+        _ ->
             ( model, Cmd.none )
 
 
-view : Model -> Html Msg
-view model =
-    Element.layout [] <|
-        column [ spacing 10, fill |> width ]
-            [ View.Navbar.render model.navbar
-            , case model.page of
-                Blog ->
-                    View.Blog.render
+changePage model page =
+    case page of
+        Podcasts ->
+            { model
+                | page = page
+                , search =
+                    { searchResults = model.search.searchResults
+                    , searchBarContents = ""
+                    }
+            }
 
-                Mario game ->
-                    text "Mario game goes here"
-            ]
+        Blog ->
+            { model | page = page }
+
+
+filterMaybes =
+    List.filterMap identity
+
+
+view : Model -> Browser.Document Msg
+view model =
+    { title = "Hello SPA"
+    , body =
+        [ Element.layout [] <|
+            column [ spacing 10, fill |> width ]
+                [ View.Navbar.render model.navbar
+                , case model.page of
+                    Blog ->
+                        View.Blog.render
+
+                    Podcasts ->
+                        column []
+                            ([ Input.search []
+                                { onChange = SearchBarType
+                                , text = model.search.searchBarContents
+                                , placeholder = Nothing
+                                , label = Input.labelHidden "Search Bar"
+                                }
+                             ]
+                                ++ (case Dict.get model.search.searchBarContents model.search.searchResults of
+                                        Just results ->
+                                            results
+                                                |> List.map (\res -> res.artist)
+                                                |> filterMaybes
+                                                |> List.map (\artist -> Element.paragraph [] [ text artist ])
+
+                                        Nothing ->
+                                            []
+                                   )
+                            )
+                ]
+        ]
+    }
 
 
 subscriptions : Model -> Sub Msg
@@ -139,16 +225,18 @@ subscriptions model =
             Blog ->
                 Sub.none
 
-            Mario { game } ->
-                Mario.Subs.subscriptions game MarioMsg
+            Podcasts ->
+                Sub.none
         , Browser.Events.onResize ScreenResize
         ]
 
 
 main : Program Json.Decode.Value Model Msg
 main =
-    Browser.element
+    Browser.application
         { init = init
+        , onUrlChange = \_ -> NoOp
+        , onUrlRequest = ClickedLink
         , view = view
         , update = update
         , subscriptions = subscriptions

@@ -36,7 +36,7 @@
 
 (def ^{:private true} -dot-env
   (reify Config
-    (config-val [this value]
+    (config-val [_ value]
       (get (DotEnv/load) value))))
 
 (defn- merge-two-configs

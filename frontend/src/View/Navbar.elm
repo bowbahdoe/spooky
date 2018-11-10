@@ -18,31 +18,31 @@ navbarStyle =
     }
 
 
-navbarCategory : (NavbarCategory Msg -> Bool) -> NavbarCategory Msg -> Element Msg
-navbarCategory hoveredOver navCategory =
+navbarCategory : NavbarCategory Msg -> Element Msg
+navbarCategory navCategory =
     el
-        [ if hoveredOver navCategory then
-            Background.color <| rgb255 255 255 255
-
-          else
-            Background.color <| navbarStyle.labelBackground
+        [ Background.color <| navbarStyle.labelBackground
+        , Element.mouseOver
+            [ Background.color <|
+                rgb255 255
+                    255
+                    255
+            ]
         , padding 5
         , Border.rounded 3
-        , onMouseEnter (EnterHoverNavItem navCategory.id)
-        , onMouseLeave (LeaveHoverNavItem navCategory.id)
         , onClick navCategory.onSelect
         ]
         (text navCategory.title)
 
 
-navbarCategories hoveredOver categories =
+navbarCategories categories =
     row
         [ alignLeft
         , Font.color <| navbarStyle.labelColor
         , spacing 15
         , padding 10
         ]
-        (List.map (navbarCategory hoveredOver) categories)
+        (List.map navbarCategory categories)
 
 
 navbarLogo logo =
@@ -61,16 +61,8 @@ navbarLogo logo =
 
 render navbarData =
     let
-        hoveredOver cat =
-            case navbarData.hoveringOver of
-                Nothing ->
-                    False
-
-                Just id ->
-                    cat.id == id
-
         navCategories =
-            navbarCategories hoveredOver navbarData.categories
+            navbarCategories navbarData.categories
 
         contents =
             case navbarData.logo of
