@@ -1,7 +1,6 @@
 import './main.css';
 import { Elm } from './Main.elm';
 import registerServiceWorker from './registerServiceWorker';
-import createPlayer from 'web-audio-player'
 
 const app = Elm.Main.init({
     node: document.getElementById('root'),
@@ -9,17 +8,24 @@ const app = Elm.Main.init({
         apiUrl : process.env.NODE_ENV === "production" ? "/" : "http://localhost:8080/",
     }
 });
-
+console.log(app.ports)
 function registerAudioPorts() {
     let audio = null;
+    function sendAudioState() {
+        if (audio !== null) {
+            app.ports.audioUpdated.send({
+                currentTime : audio.currentTime,
+                duration : audio.duration,
+                playing : !audio.paused
+            })
+        }
+    }
     app.ports.startAudio.subscribe(({ url }) => {
         console.info("Playing " + url);
         if (audio == null) {
-            audio =  createPlayer(url);
-            audio.on('load', () => {
-                audio.play();
-                audio.node.connect(audio.context.destination);
-            })
+            audio = new Audio(url);
+            audio.addEventListener("timeupdate", sendAudioState);
+            audio.play();
         }
         else {
             audio.play();
@@ -30,7 +36,7 @@ function registerAudioPorts() {
             console.error("Tried to stop playing audio when none was playing.")
         }
         else {
-            audio.stop();
+            audio.pause();
             audio = null;
         }
     });
@@ -39,7 +45,8 @@ function registerAudioPorts() {
             console.error("Tried to pause audio when none was playing.")
         }
         else {
-            audio.pause()
+            audio.pause();
+            sendAudioState();
         }
     });
 }

@@ -1,6 +1,7 @@
 module Msg exposing (Msg(..))
 
 import Browser exposing (UrlRequest)
+import Data.Audio exposing (Audio)
 import GraphQL.Client.Http as GraphQLClient
 import Podcasts exposing (SearchResult)
 
@@ -16,3 +17,4 @@ type Msg
     | PlayAudio { url : String }
     | StopAudio
     | PauseAudio
+    | AudioUpdated Audio

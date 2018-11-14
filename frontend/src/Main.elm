@@ -4,6 +4,7 @@ import Browser exposing (UrlRequest(..))
 import Browser.Dom
 import Browser.Events
 import Browser.Navigation
+import Data.Audio exposing (Audio)
 import Data.Navbar as Navbar exposing (Navbar, NavbarCategory)
 import Dict exposing (Dict)
 import Element exposing (..)
@@ -19,7 +20,7 @@ import Http
 import Json.Decode
 import Msg exposing (Msg(..))
 import Podcasts exposing (SearchResult, searchRequest)
-import Ports exposing (pauseAudio, startAudio, stopAudio)
+import Ports exposing (..)
 import Task
 import Url
 import View.Blog
@@ -41,6 +42,7 @@ type alias Model =
         { searchBarContents : String
         , searchResults : Dict String (List SearchResult)
         }
+    , audio : Maybe Audio
     }
 
 
@@ -90,6 +92,7 @@ init flagsValue url navKey =
                 { searchBarContents = ""
                 , searchResults = Dict.empty
                 }
+            , audio = Nothing
             }
 
         initialCommands =
@@ -169,6 +172,9 @@ update msg model =
         PauseAudio ->
             ( model, pauseAudio () )
 
+        AudioUpdated audio ->
+            ( { model | audio = Just audio }, Cmd.none )
+
         _ ->
             ( model, Cmd.none )
 
@@ -241,6 +247,7 @@ subscriptions model =
             Podcasts ->
                 Sub.none
         , Browser.Events.onResize ScreenResize
+        , Ports.audioUpdated AudioUpdated
         ]
 
 

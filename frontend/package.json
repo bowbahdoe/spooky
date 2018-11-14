@@ -13,6 +13,5 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "web-audio-player": "^1.3.3"
   }
 }
