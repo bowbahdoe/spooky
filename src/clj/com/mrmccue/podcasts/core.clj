@@ -9,7 +9,8 @@
             [ring.adapter.jetty :as jetty]
             [ring.middleware.json :as json-middleware]
             [cheshire.core :as cheshire]
-            [com.mrmccue.config :refer [*config* config-val]]
+            [mount.core :as mount]
+            [com.mrmccue.config :refer [config config-val]]
             [com.mrmccue.podcasts.gql :as gql]
             [com.mrmccue.graphql-ring :refer [graphql-view]]
             [ring.middleware.cors :refer [wrap-cors]])
@@ -17,12 +18,18 @@
 
 (def gql-routes (graphql-view :schema gql/schema
                               :graphiql true))
+
+(defn catch-all-resources []
+  (let [resources-route (route/resources "/")]
+    (fn [req]
+      (or (resources-route req)
+          (resources-route (assoc-in req [:uri] "/index.html"))))))
+
 (defroutes main-routes
-           (GET "/session_info" [] (fn [req] (str (:session req))))
            (POST "/graphql" [] gql-routes)
            (GET "/graphql" [] gql-routes)
-           (route/resources "/")
-           (route/not-found "<h1> Not Found </h1>"))
+           (catch-all-resources))
+
 
 (defn wrap-dir-index
   "Middleware to force request for / to return index.html"
@@ -42,5 +49,6 @@
 (defn -main
   "This is the main entry point for the application."
   [& args]
-  (let [port (int (config-val *config* "port"))]
+  (mount/start)
+  (let [port (Integer/valueOf ^String (config-val config "port"))]
      (jetty/run-jetty app {:port port})))

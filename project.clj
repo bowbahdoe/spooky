@@ -35,9 +35,10 @@
                  [com.novemberain/monger "3.1.0"]
                  [selmer "1.12.0"]
                  [com.stuartsierra/component "0.3.2"]
-                 [ring-cors "0.1.12"]]
-
-
+                 [ring-cors "0.1.12"]
+                 ;; https://mvnrepository.com/artifact/org.springframework.security/spring-security-core
+                 [org.springframework.security/spring-security-crypto "5.1.1.RELEASE"]
+                 [mount "0.1.14"]]
 
   ;; lein pom
   ;; mvn generate-sources
@@ -54,10 +55,10 @@
 
   :source-paths ["src/clj"]
   :java-source-paths ["src/java/"]
-  :main ^:skip-aot com.mrmccue.podcasts.core
+  :main com.mrmccue.podcasts.core
   :target-path "target/%s"
   :resource-paths ["resources/"]
-  :profiles {:uberjar {:aot :all}}
+  :profiles {:uberjar {:aot [com.mrmccue.podcasts.core]}}
   :repl-options {;; If nREPL takes too long to load it may timeout,
                  ;; increase this to wait longer before timing out.
                  ;; Defaults to 30000 (30 seconds)

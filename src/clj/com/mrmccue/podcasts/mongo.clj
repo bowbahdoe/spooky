@@ -1,63 +1,54 @@
 (ns com.mrmccue.podcasts.mongo
   (:use [com.mrmccue.macros])
-  (:require [com.mrmccue.util :refer [count-from]]
+  (:require [com.mrmccue.util :refer [count-from make-private!]]
             [monger.core :as mg]
             [monger.collection :as mc]
-            [com.stuartsierra.component :as component]
-            [clojure.tools.logging :as log]))
+            [mount.core :as mount :refer [defstate]]
+            [com.mrmccue.config :refer [config config-val]]
+            [clojure.tools.logging :as log])
+  (:import [org.springframework.security.crypto.bcrypt BCryptPasswordEncoder]))
 
-;; Database Component ripe for instrumentation
-(defrecord MongoDB [table-name conn db]
-  component/Lifecycle
-  (start [this]
-    (let [conn (mg/connect)]
-      (-> this
-          (assoc :conn conn)
-          (assoc :db (mg/get-db conn (:table-name this))))))
-  (stop [this]
-    (mg/disconnect (:conn this))
-    (-> this
-        (assoc :conn nil)
-        (assoc :db nil))))
+(defstate mongo-conn
+          :start (mg/connect)
+          :stop (mg/disconnect mongo-conn))
 
-(defn make-mongodb
-  "Makes an instance of the mongo db component"
-  []
-  (map->MongoDB {:table-name "podcasts"}))
+(defstate db
+          :start (mg/get-db mongo-conn "podcasts"))
 
-(defn- concat-byte-arrays [arr1 arr2]
-  (let [arr1-len (count arr1)
-        arr2-len (count arr2)
-        comb-len (+ arr1-len arr2-len)
-        new-arr (byte-array comb-len)]
-    (doseq [i (count-from 0 :up-to arr1-len)]
-      (aset-byte new-arr i (aget arr1 i)))
-    (doseq [i (count-from arr1-len :up-to (dec comb-len))]
-      (log/info (- i arr1-len))
-      (aset-byte new-arr i (aget arr1 (- i arr1-len))))
-    new-arr))
+(def password-encoder (BCryptPasswordEncoder.))
 
-(defn- registration-info [new-user]
-  (let [{:keys [username password]} new-user
-        password-salt (com.mrmccue.util/get-salt-sha1prng)
-        password-hash (com.mrmccue.util/sha-512 (str password
-                                                     password-salt))]
-    (log/info (str password password-salt))
-    (m username
-       password-salt
-       password-hash)))
+(defn register-user [username password]
+  (when (nil? username)
+    (oops "Must provide a non-null username"))
+  (when (nil? password)
+    (oops "Must provide a non-null password"))
 
-
-
-(defn register-user [{:keys [db]} &
-                     {:keys [username password]}]
-  (let [salt (com.mrmccue.util/get-salt-sha1prng)
-        password-hash (com.mrmccue.util/sha-512 (str password salt))]
+  (let [password-hash (.encode password-encoder password)]
+    (log/info (str "Registering user " username))
     (mc/insert-and-return db
                           "users"
-                          (m+ username
-                              password-hash
-                              | :password-salt salt))))
+                          (m username
+                             password-hash))))
 
-(defn list-all-users [{:keys [db]}]
+(defn check-password [username password]
+  (when (nil? username)
+    (oops "Must provide a non-null username"))
+  (when (nil? password)
+    (oops "Must provide a non-null password"))
+
+  (let [user-record (mc/find-one-as-map
+                      db
+                      "users"
+                      {:username username})
+        valid-pass (and (not (nil? user-record))
+                        (.matches
+                          password-encoder
+                          password
+                          (:password-hash user-record)))
+        _ (if valid-pass
+            (log/info (str "Given correct password for " username))
+            (log/info (str "Given wrong password for " username)))]
+    valid-pass))
+
+(defn list-all-users []
   (mc/find-maps db "users"))

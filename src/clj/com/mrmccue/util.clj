@@ -14,6 +14,17 @@
   [coll elm]
   (some #(= elm %) coll))
 
+(defn make-private!
+  "Given a var in a namespace, alters that vars
+  metadata so it is private. Useful for hiding default
+  record constructors
+
+  (defrecord Apple [color])
+  (make-private! #'map->Apple)
+  (make-private! #'->Apple)"
+  [var]
+  (alter-meta! var assoc :private true))
+
 (defn hierarchy
   "credits to @seancorfield. I got it from him; who knows where he got it"
   [klass]

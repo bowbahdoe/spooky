@@ -19,6 +19,7 @@ import Http
 import Json.Decode
 import Msg exposing (Msg(..))
 import Podcasts exposing (SearchResult, searchRequest)
+import Ports exposing (pauseAudio, startAudio, stopAudio)
 import Task
 import Url
 import View.Blog
@@ -78,8 +79,8 @@ init flagsValue url navKey =
                         , onSelect = NoOp
                         }
                 , categories =
-                    [ { id = "0", title = "Podcasts", onSelect = EnterPodcasts }
-                    , { id = "1", title = "Blog", onSelect = EnterBlog }
+                    [ { title = "Podcasts", onSelect = EnterPodcasts }
+                    , { title = "Blog", onSelect = EnterBlog }
                     ]
                 }
             , page = determinePage url
@@ -159,6 +160,15 @@ update msg model =
                 External path ->
                     ( model, Browser.Navigation.load path )
 
+        PlayAudio { url } ->
+            ( model, startAudio { url = url } )
+
+        StopAudio ->
+            ( model, stopAudio () )
+
+        PauseAudio ->
+            ( model, pauseAudio () )
+
         _ ->
             ( model, Cmd.none )
 
@@ -189,6 +199,9 @@ view model =
         [ Element.layout [] <|
             column [ spacing 10, fill |> width ]
                 [ View.Navbar.render model.navbar
+                , Input.button [] { onPress = Just (PlayAudio { url = "title1.ogg" }), label = text "PLAY AUDIO" }
+                , Input.button [] { onPress = Just StopAudio, label = text "STOP AUDIO" }
+                , Input.button [] { onPress = Just PauseAudio, label = text "PAUSE AUDIO" }
                 , case model.page of
                     Blog ->
                         View.Blog.render

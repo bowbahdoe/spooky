@@ -13,3 +13,6 @@ type Msg
     | SearchBarType String
     | RecievePodcastSearchResults String (Result GraphQLClient.Error (List SearchResult))
     | ClickedLink UrlRequest
+    | PlayAudio { url : String }
+    | StopAudio
+    | PauseAudio

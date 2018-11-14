@@ -2,7 +2,8 @@
   ^{:author "Ethan McCue"}
   com.mrmccue.config
   (:require [clojure.java.io :as io]
-            [cheshire.core :as cheshire])
+            [cheshire.core :as cheshire]
+            [mount.core :refer [defstate]])
   (:import [java.util Properties]
            [org.apache.commons.io.input CharSequenceReader]
            [clojure.lang IPersistentMap]
@@ -34,10 +35,11 @@
   (config-val [this value]
     (get this value)))
 
-(def ^{:private true} -dot-env
-  (reify Config
-    (config-val [_ value]
-      (get (DotEnv/load) value))))
+(defn- make-env-config []
+  (let [env (DotEnv/load)]
+    (reify Config
+      (config-val [_ value]
+        (get env value)))))
 
 (defn- merge-two-configs
   "Merges the two configs, preferring values left to right"
@@ -58,8 +60,8 @@
             empty-config
             configs)))
 
-(def ^:dynamic *config*
-  (merge-configs
-    [(load-json "config.json")
-     (load-properties "config.properties")
-     -dot-env]))
+(defstate config
+          :start (merge-configs
+                   [(make-env-config)
+                    (load-json "config.json")
+                    (load-properties "config.properties")]))

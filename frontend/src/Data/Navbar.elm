@@ -5,8 +5,7 @@ module Data.Navbar exposing
 
 
 type alias NavbarCategory msg =
-    { id : String
-    , title : String
+    { title : String
     , onSelect : msg
     }
 
