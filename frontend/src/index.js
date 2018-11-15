@@ -8,8 +8,9 @@ const app = Elm.Main.init({
         apiUrl : process.env.NODE_ENV === "production" ? "/" : "http://localhost:8080/",
     }
 });
-console.log(app.ports)
+
 function registerAudioPorts() {
+    console.log(app);
     let audio = null;
     function sendAudioState() {
         if (audio !== null) {

@@ -1,12 +1,22 @@
-module View.Navbar exposing (render)
+module Navbar exposing (Navbar, NavbarCategory, render)
 
-import Data.Navbar exposing (NavbarCategory)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Events exposing (..)
 import Element.Font as Font
-import Msg exposing (Msg(..))
+
+
+type alias NavbarCategory msg =
+    { title : String
+    , onSelect : msg
+    }
+
+
+type alias Navbar msg =
+    { logo : Maybe { url : String, onSelect : msg }
+    , categories : List (NavbarCategory msg)
+    }
 
 
 navbarStyle =
@@ -18,7 +28,7 @@ navbarStyle =
     }
 
 
-navbarCategory : NavbarCategory Msg -> Element Msg
+navbarCategory : NavbarCategory msg -> Element msg
 navbarCategory navCategory =
     el
         [ Background.color <| navbarStyle.labelBackground

@@ -3,7 +3,7 @@ module Msg exposing (Msg(..))
 import Browser exposing (UrlRequest)
 import Data.Audio exposing (Audio)
 import GraphQL.Client.Http as GraphQLClient
-import Podcasts exposing (SearchResult)
+import Podcasts
 
 
 type Msg
@@ -11,10 +11,5 @@ type Msg
     | EnterBlog
     | EnterPodcasts
     | ScreenResize Int Int -- Width, Height
-    | SearchBarType String
-    | RecievePodcastSearchResults String (Result GraphQLClient.Error (List SearchResult))
     | ClickedLink UrlRequest
-    | PlayAudio { url : String }
-    | StopAudio
-    | PauseAudio
-    | AudioUpdated Audio
+    | PodcastMsg Podcasts.Msg

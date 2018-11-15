@@ -4,8 +4,6 @@ import Browser exposing (UrlRequest(..))
 import Browser.Dom
 import Browser.Events
 import Browser.Navigation
-import Data.Audio exposing (Audio)
-import Data.Navbar as Navbar exposing (Navbar, NavbarCategory)
 import Dict exposing (Dict)
 import Element exposing (..)
 import Element.Background as Background
@@ -14,17 +12,15 @@ import Element.Events exposing (..)
 import Element.Font as Font
 import Element.Input as Input
 import Flags
-import GraphQL.Client.Http as GraphQLClient
 import Html exposing (Html)
 import Http
 import Json.Decode
 import Msg exposing (Msg(..))
-import Podcasts exposing (SearchResult, searchRequest)
+import Navbar
+import Podcasts
 import Ports exposing (..)
 import Task
 import Url
-import View.Blog
-import View.Navbar
 
 
 type Page
@@ -34,15 +30,9 @@ type Page
 
 type alias Model =
     { navKey : Browser.Navigation.Key
-    , navbar : Navbar Msg
     , page : Page
-    , apiUrl : String
+    , podcasts : Podcasts.Model
     , screenSize : Maybe { width : Int, height : Int }
-    , search :
-        { searchBarContents : String
-        , searchResults : Dict String (List SearchResult)
-        }
-    , audio : Maybe Audio
     }
 
 
@@ -74,25 +64,9 @@ init flagsValue url navKey =
 
         initialModel =
             { navKey = navKey
-            , navbar =
-                { logo =
-                    Just
-                        { url = "https://package.elm-lang.org/assets/favicon.ico"
-                        , onSelect = NoOp
-                        }
-                , categories =
-                    [ { title = "Podcasts", onSelect = EnterPodcasts }
-                    , { title = "Blog", onSelect = EnterBlog }
-                    ]
-                }
             , page = determinePage url
-            , apiUrl = flags.apiUrl
             , screenSize = Nothing
-            , search =
-                { searchBarContents = ""
-                , searchResults = Dict.empty
-                }
-            , audio = Nothing
+            , podcasts = Podcasts.init { apiUrl = flags.apiUrl }
             }
 
         initialCommands =
@@ -127,32 +101,6 @@ update msg model =
             , Cmd.none
             )
 
-        SearchBarType query ->
-            ( let
-                search =
-                    model.search
-
-                updated =
-                    { search | searchBarContents = query }
-              in
-              { model | search = updated }
-            , GraphQLClient.sendQuery (model.apiUrl ++ "graphql") (searchRequest query)
-                |> Task.attempt (RecievePodcastSearchResults query)
-            )
-
-        RecievePodcastSearchResults query (Ok results) ->
-            let
-                search =
-                    model.search
-
-                updatedSearchResults =
-                    Dict.insert query results model.search.searchResults
-
-                updated =
-                    { search | searchResults = updatedSearchResults }
-            in
-            ( { model | search = updated }, Cmd.none )
-
         ClickedLink req ->
             case req of
                 Internal url ->
@@ -163,20 +111,12 @@ update msg model =
                 External path ->
                     ( model, Browser.Navigation.load path )
 
-        PlayAudio { url } ->
-            ( model, startAudio { url = url } )
-
-        StopAudio ->
-            ( model, stopAudio () )
-
-        PauseAudio ->
-            ( model, pauseAudio () )
-
-        AudioUpdated audio ->
-            ( { model | audio = Just audio }, Cmd.none )
-
-        _ ->
-            ( model, Cmd.none )
+        PodcastMsg podcastMsg ->
+            let
+                ( podcastsModel, cmds ) =
+                    Podcasts.update podcastMsg model.podcasts
+            in
+            ( { model | podcasts = podcastsModel }, Cmd.map PodcastMsg cmds )
 
 
 changePage model page =
@@ -184,18 +124,11 @@ changePage model page =
         Podcasts ->
             { model
                 | page = page
-                , search =
-                    { searchResults = model.search.searchResults
-                    , searchBarContents = ""
-                    }
+                , podcasts = Podcasts.leave model.podcasts
             }
 
         Blog ->
             { model | page = page }
-
-
-filterMaybes =
-    List.filterMap identity
 
 
 view : Model -> Browser.Document Msg
@@ -204,34 +137,23 @@ view model =
     , body =
         [ Element.layout [] <|
             column [ spacing 10, fill |> width ]
-                [ View.Navbar.render model.navbar
-                , Input.button [] { onPress = Just (PlayAudio { url = "title1.ogg" }), label = text "PLAY AUDIO" }
-                , Input.button [] { onPress = Just StopAudio, label = text "STOP AUDIO" }
-                , Input.button [] { onPress = Just PauseAudio, label = text "PAUSE AUDIO" }
+                [ Navbar.render
+                    { logo =
+                        Just
+                            { url = "https://package.elm-lang.org/assets/favicon.ico"
+                            , onSelect = NoOp
+                            }
+                    , categories =
+                        [ { title = "Podcasts", onSelect = EnterPodcasts }
+                        , { title = "Blog", onSelect = EnterBlog }
+                        ]
+                    }
                 , case model.page of
                     Blog ->
-                        View.Blog.render
+                        text "todo"
 
                     Podcasts ->
-                        column []
-                            ([ Input.search []
-                                { onChange = SearchBarType
-                                , text = model.search.searchBarContents
-                                , placeholder = Nothing
-                                , label = Input.labelHidden "Search Bar"
-                                }
-                             ]
-                                ++ (case Dict.get model.search.searchBarContents model.search.searchResults of
-                                        Just results ->
-                                            results
-                                                |> List.map (\res -> res.artist)
-                                                |> filterMaybes
-                                                |> List.map (\artist -> Element.paragraph [] [ text artist ])
-
-                                        Nothing ->
-                                            []
-                                   )
-                            )
+                        Element.map PodcastMsg <| Podcasts.view model.podcasts
                 ]
         ]
     }
@@ -245,9 +167,8 @@ subscriptions model =
                 Sub.none
 
             Podcasts ->
-                Sub.none
+                Sub.map PodcastMsg <| Podcasts.subs model.podcasts
         , Browser.Events.onResize ScreenResize
-        , Ports.audioUpdated AudioUpdated
         ]
 
 
