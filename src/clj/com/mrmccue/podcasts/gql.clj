@@ -12,9 +12,9 @@
   {:query/search (fn [_ {:keys [query]} _]
                    (itunes/normalized-search query))
    :query/feed (fn [_  {:keys [url]} _]
-                 (feed/podcast-feed url))
+                 (feed/safe (feed/podcast-feed url)))
    :SearchResult/feed (fn [_ _ {:keys [feedUrl]}]
-                       (feed/podcast-feed feedUrl))})
+                       (feed/safe (feed/podcast-feed feedUrl)))})
 
 (defn load-schema []
   (-> (io/resource "podcasts/schema.edn")

@@ -133,7 +133,13 @@ changePage model page =
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = "Hello SPA"
+    { title =
+        case model.page of
+            Blog ->
+                "Blog"
+
+            Podcasts ->
+                "Podcasts"
     , body =
         [ Element.layout [] <|
             column [ spacing 10, fill |> width ]

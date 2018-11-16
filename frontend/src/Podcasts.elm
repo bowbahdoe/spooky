@@ -210,7 +210,7 @@ view : Model -> Element Msg
 view model =
     column [ fill |> width ]
         [ searchBar model.searchBarContents
-        , column [ spacing 5, padding 5 ] <|
+        , column [ spacing 5, padding 5, fill |> width ] <|
             (Dict.get model.searchBarContents model.searchResults
                 |> Maybe.withDefault []
                 |> List.map searchResultListing
