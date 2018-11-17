@@ -13,7 +13,24 @@ module Podcasts exposing
 import Data.Audio exposing (Audio)
 import Debug
 import Dict exposing (Dict)
-import Element exposing (..)
+import Element
+    exposing
+        ( Element
+        , alignTop
+        , centerX
+        , column
+        , el
+        , fill
+        , image
+        , padding
+        , paragraph
+        , px
+        , rgb255
+        , row
+        , spacing
+        , text
+        , width
+        )
 import Element.Background as Background
 import Element.Border as Border
 import Element.Events exposing (..)
@@ -174,7 +191,7 @@ albumImage url =
         , width (px 200)
         ]
     <|
-        Element.image
+        image
             [ fill |> width ]
             { src = url
             , description = ""
@@ -193,14 +210,14 @@ searchResultListing result =
         ]
         [ albumImage <| Maybe.withDefault defaultImage result.image
         , column [ alignTop, padding 3, fill |> width ]
-            [ Element.paragraph [] <|
+            [ paragraph [] <|
                 [ el [ Font.size 30 ] <|
-                    Element.text <|
+                    text <|
                         Maybe.withDefault "" result.collection
                 ]
-            , Element.paragraph [] <|
+            , paragraph [] <|
                 [ el [ Font.size 20, Font.color (rgb255 50 50 50), Font.italic ]
-                    (Element.text <| Maybe.withDefault "" result.artist)
+                    (text <| Maybe.withDefault "" result.artist)
                 ]
             ]
         ]
