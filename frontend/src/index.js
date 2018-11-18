@@ -52,5 +52,10 @@ function registerAudioPorts() {
     });
 }
 
+function registerLoggingPorts() {
+    app.ports.error.subscribe(console.error.bind(console));
+}
+
+registerLoggingPorts();
 registerAudioPorts();
 registerServiceWorker();

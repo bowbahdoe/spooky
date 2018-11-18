@@ -55,6 +55,7 @@ import GraphQL.Request.Builder
 import GraphQL.Request.Builder.Arg as Arg
 import GraphQL.Request.Builder.Variable as Var
 import Http
+import Pallete
 import Ports
 import Task exposing (Task)
 
@@ -125,6 +126,16 @@ type Msg
     | AudioUpdated Audio
 
 
+activeSearchResults : Model -> Maybe (List SearchResult)
+activeSearchResults { searchBarContents, searchResults } =
+    Dict.get searchBarContents searchResults
+
+
+gqlUrl : { a | apiUrl : String } -> String
+gqlUrl { apiUrl } =
+    apiUrl ++ "graphql"
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -134,7 +145,7 @@ update msg model =
                     RecievePodcastSearchResults { query = query, result = result }
             in
             ( { model | searchBarContents = query }
-            , GraphQLClient.sendQuery (model.apiUrl ++ "graphql")
+            , GraphQLClient.sendQuery (gqlUrl model)
                 (searchRequest query)
                 |> Task.attempt onResults
             )
@@ -149,7 +160,7 @@ update msg model =
                     ( { model | searchResults = updatedSearchResults }, Cmd.none )
 
                 Err _ ->
-                    ( model, Cmd.none )
+                    ( model, Ports.error ("Searching for " ++ query ++ "failed") )
 
         PlayAudio { url } ->
             ( model, Ports.startAudio { url = url } )
@@ -166,7 +177,7 @@ update msg model =
 
 searchBar contents =
     el [ width (px 600), centerX ]
-        (Input.search []
+        (Input.search [ Background.color Pallete.white ]
             { onChange = SearchBarType
             , text = contents
             , placeholder = Just <| Input.placeholder [] (text "Search")
@@ -175,6 +186,7 @@ searchBar contents =
         )
 
 
+filterMaybes : List (Maybe a) -> List a
 filterMaybes =
     List.filterMap identity
 
@@ -185,17 +197,17 @@ defaultImage =
 
 albumImage url =
     el
-        [ Border.color (rgb255 0 0 0)
+        [ Border.color Pallete.pink
         , Border.width 5
         , Border.rounded 5
         , width (px 200)
         ]
-    <|
-        image
+        (image
             [ fill |> width ]
             { src = url
             , description = ""
             }
+        )
 
 
 searchResultListing result =
@@ -203,9 +215,10 @@ searchResultListing result =
         [ padding 3
         , Border.solid
         , Border.rounded 3
-        , Border.color (rgb255 0 0 0)
+        , Border.color Pallete.pink
         , Border.width 2
-        , Background.color (rgb255 50 255 50)
+        , Background.color Pallete.blue
+        , Font.color Pallete.fontColor
         , fill |> width
         ]
         [ albumImage <| Maybe.withDefault defaultImage result.image
@@ -216,7 +229,7 @@ searchResultListing result =
                         Maybe.withDefault "" result.collection
                 ]
             , paragraph [] <|
-                [ el [ Font.size 20, Font.color (rgb255 50 50 50), Font.italic ]
+                [ el [ Font.size 20, Font.italic ]
                     (text <| Maybe.withDefault "" result.artist)
                 ]
             ]
@@ -227,8 +240,8 @@ view : Model -> Element Msg
 view model =
     column [ fill |> width ]
         [ searchBar model.searchBarContents
-        , column [ spacing 5, padding 5, fill |> width ] <|
-            (Dict.get model.searchBarContents model.searchResults
+        , column [ spacing 5, padding 5, fill |> width ]
+            (activeSearchResults model
                 |> Maybe.withDefault []
                 |> List.map searchResultListing
             )

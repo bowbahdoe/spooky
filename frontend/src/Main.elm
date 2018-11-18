@@ -17,6 +17,7 @@ import Http
 import Json.Decode
 import Msg exposing (Msg(..))
 import Navbar
+import Pallete
 import Podcasts
 import Ports exposing (..)
 import Task
@@ -142,7 +143,12 @@ view model =
                 "Podcasts"
     , body =
         [ Element.layout [] <|
-            column [ spacing 10, fill |> width ]
+            column
+                [ spacing 10
+                , fill |> width
+                , Background.color Pallete.brown
+                , Font.family [ Font.typeface "StRyde-Regular" ]
+                ]
                 [ Navbar.render
                     { logo =
                         Just

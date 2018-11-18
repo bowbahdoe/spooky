@@ -5,6 +5,7 @@ import Element.Background as Background
 import Element.Border as Border
 import Element.Events exposing (..)
 import Element.Font as Font
+import Pallete
 
 
 type alias NavbarCategory msg =
@@ -19,12 +20,20 @@ type alias Navbar msg =
     }
 
 
+white =
+    rgb255 255 255 255
+
+
+black =
+    rgb255 0 0 0
+
+
 navbarStyle =
-    { backgroundColor = rgb255 0 0 50
+    { backgroundColor = Pallete.gray
+    , highlightColor = Pallete.pink
     , elementSpacing = 5
-    , labelSize = Font.size 12
-    , labelColor = rgb255 255 0 0
-    , labelBackground = rgb255 0 0 100
+    , labelColor = Pallete.fontColor
+    , labelBackground = Pallete.red
     }
 
 
@@ -34,9 +43,7 @@ navbarCategory navCategory =
         [ Background.color <| navbarStyle.labelBackground
         , Element.mouseOver
             [ Background.color <|
-                rgb255 255
-                    255
-                    255
+                navbarStyle.highlightColor
             ]
         , padding 5
         , Border.rounded 3
